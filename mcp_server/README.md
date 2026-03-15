@@ -5,9 +5,7 @@ MCP server for searching SPEC CPU2017 benchmark results. Provides 4 tools for AI
 ## Installation
 
 ```bash
-pip install spec-search-mcp
-# or
-uvx spec-search-mcp
+pip install "spec-search-mcp @ git+https://github.com/fjacquet/spec-search.git#subdirectory=mcp_server"
 ```
 
 ## Usage
@@ -20,7 +18,8 @@ Add to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "spec-search": {
-      "command": "spec-search-mcp"
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/fjacquet/spec-search.git#subdirectory=mcp_server", "spec-search-mcp"]
     }
   }
 }
@@ -35,7 +34,7 @@ Add to your `~/.claude.json`:
   "mcpServers": {
     "spec-search": {
       "command": "uvx",
-      "args": ["spec-search-mcp"]
+      "args": ["--from", "git+https://github.com/fjacquet/spec-search.git#subdirectory=mcp_server", "spec-search-mcp"]
     }
   }
 }

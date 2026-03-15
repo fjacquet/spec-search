@@ -18,7 +18,6 @@ web/public/data/processors/
 # MCP server venv and build artifacts
 mcp_server/.venv/
 mcp_server/dist/
-mcp_server/src/spec_search_mcp/data/
 
 # OS
 .DS_Store

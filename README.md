@@ -40,7 +40,13 @@ make test
 make lint
 ```
 
-### MCP Server Registration
+### MCP Server
+
+Install and register the MCP server for Claude:
+
+```bash
+pip install "spec-search-mcp @ git+https://github.com/fjacquet/spec-search.git#subdirectory=mcp_server"
+```
 
 Add to your Claude config (`~/.claude.json` or Claude Desktop):
 
@@ -48,8 +54,8 @@ Add to your Claude config (`~/.claude.json` or Claude Desktop):
 {
   "mcpServers": {
     "spec-search": {
-      "command": "uv",
-      "args": ["run", "--directory", "/path/to/spec-search/mcp_server", "python", "server.py"]
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/fjacquet/spec-search.git#subdirectory=mcp_server", "spec-search-mcp"]
     }
   }
 }
