@@ -3,7 +3,7 @@
 
 from fastmcp import FastMCP
 
-from data_loader import load_data
+from spec_search_mcp.data_loader import load_data
 
 mcp = FastMCP(
     name="spec-search",

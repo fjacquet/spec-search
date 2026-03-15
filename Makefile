@@ -15,7 +15,7 @@ build: data
 	cd web && npm run build
 
 mcp:
-	cd mcp_server && uv run python server.py
+	cd mcp_server && uv run spec-search-mcp
 
 test: test-pipeline test-mcp test-web
 

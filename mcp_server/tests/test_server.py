@@ -1,16 +1,10 @@
 """Tests for the MCP server tools (unit tests with a mock DataFrame)."""
 
-import os
-import sys
-
 import pandas as pd
 import pytest
 
-# Add mcp_server to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-import data_loader
-from server import compare_processors, get_statistics, get_top_results, search_benchmarks
+import spec_search_mcp.data_loader as data_loader
+from spec_search_mcp.server import compare_processors, get_statistics, get_top_results, search_benchmarks
 
 
 @pytest.fixture(autouse=True)

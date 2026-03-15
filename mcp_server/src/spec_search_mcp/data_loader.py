@@ -1,15 +1,45 @@
 """Load and cache SPEC CPU2017 benchmark data from CSV."""
 
+import gzip
+import importlib.resources
+import io
 import os
 import re
 
 import pandas as pd
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "datas", "cpu2017-results.csv")
+_CSV_OVERRIDE = os.environ.get("SPEC_SEARCH_CSV_PATH")
 
 _df: pd.DataFrame | None = None
 
 URL_PATTERN = re.compile(r'HREF="(/cpu2017/results/[^"]+\.html)"')
+
+
+def _load_csv_dataframe() -> pd.DataFrame:
+    """Locate and load the CSV: env var > bundled gzip > dev path."""
+    if _CSV_OVERRIDE:
+        return pd.read_csv(_CSV_OVERRIDE, encoding="utf-8-sig")
+
+    # Bundled gzip in package (pip install / uvx)
+    try:
+        ref = importlib.resources.files("spec_search_mcp") / "data" / "cpu2017-results.csv.gz"
+        with importlib.resources.as_file(ref) as gz_path:
+            if gz_path.exists():
+                with gzip.open(gz_path, "rt", encoding="utf-8-sig") as f:
+                    return pd.read_csv(io.StringIO(f.read()))
+    except (TypeError, FileNotFoundError):
+        pass
+
+    # Dev mode: uncompressed CSV relative to repo root
+    for candidate in [
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "datas", "cpu2017-results.csv"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "datas", "cpu2017-results.csv"),
+    ]:
+        if os.path.exists(candidate):
+            return pd.read_csv(candidate, encoding="utf-8-sig")
+
+    msg = "CSV data not found. Set SPEC_SEARCH_CSV_PATH env var or install the package with bundled data."
+    raise FileNotFoundError(msg)
 
 
 def _extract_url(html: str) -> str | None:
@@ -25,7 +55,7 @@ def load_data() -> pd.DataFrame:
     if _df is not None:
         return _df
 
-    df = pd.read_csv(CSV_PATH, encoding="utf-8-sig")
+    df = _load_csv_dataframe()
 
     # Strip whitespace/tabs from column names
     df.columns = df.columns.str.strip()

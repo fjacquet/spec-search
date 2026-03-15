@@ -1709,7 +1709,7 @@ wheels = [
 [[package]]
 name = "spec-search-mcp"
 version = "1.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "fastmcp" },
     { name = "pandas" },
