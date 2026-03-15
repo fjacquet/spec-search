@@ -25,11 +25,13 @@ A client-side React app deployed on GitHub Pages that allows:
 
 ### 2. MCP Server
 
-A FastMCP-based tool server exposing 4 tools:
+A pip-installable FastMCP-based tool server (`spec-search-mcp`) exposing 4 tools:
 - `search_benchmarks` — filtered search with sorting and pagination
 - `get_top_results` — top N results by peak or base score
 - `compare_processors` — side-by-side comparison of two processors
 - `get_statistics` — aggregated stats grouped by vendor/processor/benchmark
+
+Distributed as a Python package installable from the GitHub repo with bundled data (2.5MB gzip).
 
 ### 3. Static JSON API
 

@@ -37,12 +37,18 @@ The pipeline runs at build time (CI) and locally via `make data`. It uses only P
 
 ## MCP Server (`mcp_server/`)
 
-A standalone Python service using FastMCP 3.x that:
-- Loads the CSV directly into a Pandas DataFrame (cached as singleton)
+A pip-installable Python package (`spec-search-mcp`) using FastMCP 3.x:
+- Loads CSV data from bundled gzip (2.5MB) or dev-mode repo path
 - Exposes 4 tools for search, ranking, comparison, and statistics
 - Communicates via stdio transport
+- Entry point: `spec-search-mcp` command
 
-Runs locally alongside Claude Code or Claude Desktop.
+Install from GitHub:
+```bash
+pip install "spec-search-mcp @ git+https://github.com/fjacquet/spec-search.git#subdirectory=mcp_server"
+```
+
+Package layout: `src/spec_search_mcp/` with hatchling build system.
 
 ## Web Application (`web/`)
 

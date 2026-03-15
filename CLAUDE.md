@@ -149,21 +149,25 @@ SPEC CPU2017 benchmark explorer — web UI, MCP server, and static JSON API.
 
 ```
 spec-search/
-├── datas/cpu2017-results.csv       # Source data (47MB, not served)
-├── scripts/convert_csv.py          # CSV → JSON pipeline
-├── mcp_server/                     # FastMCP server (separate Python env)
-│   ├── server.py                   # 4 MCP tools
-│   ├── data_loader.py              # Pandas CSV loader
+├── datas/cpu2017-results.csv           # Source data (47MB, not served)
+├── scripts/convert_csv.py              # CSV → JSON pipeline
+├── mcp_server/                         # FastMCP server (pip-installable package)
+│   ├── pyproject.toml                  # Hatchling build, entry point: spec-search-mcp
+│   ├── src/spec_search_mcp/
+│   │   ├── server.py                   # 4 MCP tools
+│   │   ├── data_loader.py             # Pandas CSV loader (gzip-aware)
+│   │   └── data/cpu2017-results.csv.gz # Bundled data (2.5MB)
 │   └── tests/
-├── web/                            # React + Vite app
+├── web/                                # React + Vite app
+│   ├── biome.json                      # Biome linter config
 │   ├── src/
 │   │   ├── App.jsx
 │   │   ├── components/
 │   │   └── hooks/useSearch.js
-│   └── public/data/                # Generated JSON (gitignored)
-├── tests/                          # Pipeline tests
-├── docs/                           # PRD, architecture, ADRs
-└── .github/workflows/ci.yml       # CI/CD
+│   └── public/data/                    # Generated JSON (gitignored)
+├── tests/                              # Pipeline tests
+├── docs/                               # PRD, architecture, ADRs
+└── .github/workflows/ci.yml           # CI/CD (lint, test, build, security, SBOM, deploy)
 ```
 
 ## Commands
