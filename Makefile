@@ -40,6 +40,6 @@ lint-js:
 
 sbom:
 	cd web && npx @cyclonedx/cyclonedx-npm --output-file ../sbom-web.cdx.json
-	cd mcp_server && uv run cyclonedx-py environment --output ../sbom-mcp.cdx.json
+	cd mcp_server && uv run cyclonedx-py environment -o ../sbom-mcp.cdx.json
 
 ci: lint test build

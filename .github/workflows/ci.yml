@@ -144,7 +144,7 @@ jobs:
         working-directory: mcp_server
         run: |
           uv sync --group dev
-          uv run cyclonedx-py environment --output ../sbom-mcp.cdx.json
+          uv run cyclonedx-py environment -o ../sbom-mcp.cdx.json
       - name: Upload SBOMs
         uses: actions/upload-artifact@v7
         with:
