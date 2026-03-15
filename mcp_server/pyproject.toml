@@ -1,0 +1,22 @@
+[project]
+name = "spec-search-mcp"
+version = "1.0.0"
+description = "MCP server for SPEC CPU2017 benchmark search"
+requires-python = ">=3.12"
+dependencies = ["fastmcp>=2.0", "pandas>=2.0"]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.8", "pip-audit>=2.7"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[project.scripts]
+spec-search-mcp = "server:main"

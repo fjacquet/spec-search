@@ -1,0 +1,21 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2026-03-15
+
+### Added
+
+- Web application: filterable, sortable SPEC CPU2017 results browser (React 19 + Vite 6)
+- Data pipeline: CSV-to-JSON converter with per-processor index generation (623 processors, 52 vendors)
+- MCP server: FastMCP-based tool server with search, top results, compare, and statistics tools
+- Static JSON API: per-processor files for lightweight lookups by external apps (cluster-sizer)
+- CI/CD: GitHub Actions workflow with lint, test, build, security audit, SBOM, and GH Pages deploy
+- Linting: Ruff for Python, Biome for JavaScript
+- Security: pip-audit, npm audit, Dependabot for automated dependency updates
+- SBOM: CycloneDX generation for both Python and JavaScript dependencies
+- Documentation: README with badges, PRD, architecture, 3 ADRs, changelog
+- 64 tests: 21 pipeline + 24 MCP server + 19 web app

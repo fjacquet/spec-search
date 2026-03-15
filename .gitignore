@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+wheels/
+*.egg-info
+.venv
+
+# Node
+node_modules/
+web/dist/
+
+# Generated data (rebuilt from CSV by scripts/convert_csv.py)
+web/public/data/results.json
+web/public/data/facets.json
+web/public/data/processors/
+
+# MCP server venv
+mcp_server/.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.*
+
+# Coverage
+coverage/
+.coverage
+*.lcov
+htmlcov/
+
+# Claude Code
+.claude/
+
+# SBOM artifacts
+*.cdx.json
+
+# Vite cache
+web/.vite/
