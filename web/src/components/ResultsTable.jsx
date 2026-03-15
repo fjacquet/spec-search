@@ -48,11 +48,7 @@ export default function ResultsTable({ data, sortConfig, onSort }) {
         </thead>
         <tbody>
           {data.map((row) => (
-            <tr
-              key={
-                row.resultUrl || `${row.benchmark}-${row.system}-${row.vendor}`
-              }
-            >
+            <tr key={row.id}>
               {COLUMNS.map((col) => (
                 <td key={col.key} className={col.numeric ? "num" : ""}>
                   {row[col.key] ?? "—"}

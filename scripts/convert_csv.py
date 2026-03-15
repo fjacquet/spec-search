@@ -105,9 +105,10 @@ def main():
     results = []
     with open(CSV_PATH, newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
-        for raw_row in reader:
+        for idx, raw_row in enumerate(reader):
             record = process_row(raw_row)
             if record:
+                record["id"] = idx
                 results.append(record)
 
     print(f"Parsed {len(results)} records from CSV")
