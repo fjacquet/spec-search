@@ -16,10 +16,42 @@ const EMPTY_FILTERS = {
 
 const PAGE_SIZE = 50;
 
+const QUERY_PARAM_KEYS = [
+  "benchmark",
+  "vendor",
+  "processor",
+  "minCores",
+  "maxCores",
+  "minPeak",
+  "minBase",
+];
+
+function filtersFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const initial = { ...EMPTY_FILTERS };
+  for (const key of QUERY_PARAM_KEYS) {
+    const value = params.get(key);
+    if (value) initial[key] = value;
+  }
+  return initial;
+}
+
+function filtersToUrl(filters) {
+  const params = new URLSearchParams();
+  for (const key of QUERY_PARAM_KEYS) {
+    if (filters[key]) params.set(key, filters[key]);
+  }
+  const qs = params.toString();
+  const url = qs
+    ? `${window.location.pathname}?${qs}`
+    : window.location.pathname;
+  window.history.replaceState(null, "", url);
+}
+
 export default function App() {
   const [data, setData] = useState(null);
   const [facets, setFacets] = useState(null);
-  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [filters, setFilters] = useState(filtersFromUrl);
   const [sortConfig, setSortConfig] = useState({
     key: "peakResult",
     direction: "desc",
@@ -42,6 +74,7 @@ export default function App() {
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
+    filtersToUrl(newFilters);
     setPage(1);
   };
 
