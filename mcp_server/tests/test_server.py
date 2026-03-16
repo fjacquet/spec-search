@@ -152,11 +152,11 @@ class TestSearchBenchmarks:
 
     def test_benchmark_label_in_results(self):
         results = search_benchmarks(benchmark="CINT2017rate")
-        assert all(r["benchmarkLabel"] == "Integer Rate" for r in results)
+        assert all(r["benchmarkLabel"] == "Integer Multi-Core" for r in results)
 
     def test_benchmark_label_fp(self):
         results = search_benchmarks(benchmark="CFP2017rate")
-        assert all(r["benchmarkLabel"] == "FP Rate" for r in results)
+        assert all(r["benchmarkLabel"] == "FP Multi-Core" for r in results)
 
 
 # --- get_top_results ---
@@ -221,8 +221,8 @@ class TestGetStatistics:
     def test_benchmark_label_in_statistics(self):
         results = get_statistics(group_by="benchmark")
         labels = {r["benchmark"]: r["benchmarkLabel"] for r in results}
-        assert labels["CINT2017rate"] == "Integer Rate"
-        assert labels["CFP2017rate"] == "FP Rate"
+        assert labels["CINT2017rate"] == "Integer Multi-Core"
+        assert labels["CFP2017rate"] == "FP Multi-Core"
 
     def test_filter_benchmark(self):
         results = get_statistics(benchmark="CINT2017rate", group_by="vendor")

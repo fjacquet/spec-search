@@ -16,10 +16,10 @@ mcp = FastMCP(
 
 VALID_BENCHMARKS = ["CINT2017", "CFP2017", "CINT2017rate", "CFP2017rate"]
 BENCHMARK_LABELS = {
-    "CINT2017": "Integer Speed",
-    "CFP2017": "FP Speed",
-    "CINT2017rate": "Integer Rate",
-    "CFP2017rate": "FP Rate",
+    "CINT2017": "Integer Per-Core",
+    "CFP2017": "FP Per-Core",
+    "CINT2017rate": "Integer Multi-Core",
+    "CFP2017rate": "FP Multi-Core",
 }
 SORT_COLUMNS = {
     "peak_result": "peakResult",
