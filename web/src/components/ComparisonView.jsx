@@ -1,4 +1,6 @@
 import { useMediaQuery } from "../hooks/useMediaQuery";
+import BarChart from "./BarChart.jsx";
+import RadarChart from "./RadarChart.jsx";
 
 const FIELDS = [
   { key: "processor", label: "Processor" },
@@ -140,6 +142,11 @@ export default function ComparisonView({ systems, onClose }) {
         >
           Back to Results
         </button>
+      </div>
+
+      <div className="comparison-charts">
+        <RadarChart systems={systems} />
+        <BarChart systems={systems} />
       </div>
 
       {isDesktop ? (

@@ -562,6 +562,162 @@ body {
   font-size: 0.9rem;
 }
 
+/* ── Comparison Charts ── */
+.comparison-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+/* Radar Chart */
+.radar-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.radar-chart__svg {
+  width: 100%;
+  max-width: 320px;
+}
+
+.radar-chart__ring {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 0.8;
+}
+
+.radar-chart__axis {
+  stroke: var(--border);
+  stroke-width: 0.5;
+  stroke-dasharray: 3 3;
+}
+
+.radar-chart__area-a {
+  fill: rgba(13, 110, 253, 0.2);
+  stroke: #0d6efd;
+  stroke-width: 2;
+}
+
+.radar-chart__area-b {
+  fill: rgba(220, 53, 69, 0.15);
+  stroke: #dc3545;
+  stroke-width: 2;
+}
+
+.radar-chart__dot-a {
+  fill: #0d6efd;
+}
+
+.radar-chart__dot-b {
+  fill: #dc3545;
+}
+
+.radar-chart__label {
+  font-size: 11px;
+  fill: var(--text-secondary);
+  font-weight: 600;
+}
+
+.radar-chart__legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.radar-chart__legend-a::before,
+.radar-chart__legend-b::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+.radar-chart__legend-a::before {
+  background: #0d6efd;
+}
+
+.radar-chart__legend-b::before {
+  background: #dc3545;
+}
+
+/* Bar Chart */
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bar-chart__svg {
+  width: 100%;
+  max-width: 400px;
+}
+
+.bar-chart__label {
+  font-size: 11px;
+  fill: var(--text-secondary);
+  font-weight: 600;
+}
+
+.bar-chart__bar-a {
+  fill: #0d6efd;
+  opacity: 0.85;
+}
+
+.bar-chart__bar-b {
+  fill: #dc3545;
+  opacity: 0.75;
+}
+
+.bar-chart__bar-a:hover,
+.bar-chart__bar-b:hover {
+  opacity: 1;
+}
+
+.bar-chart__value {
+  font-size: 10px;
+  fill: var(--text-secondary);
+  font-weight: 600;
+}
+
+.bar-chart__legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.bar-chart__legend-a::before,
+.bar-chart__legend-b::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+.bar-chart__legend-a::before {
+  background: #0d6efd;
+}
+
+.bar-chart__legend-b::before {
+  background: #dc3545;
+}
+
 /* ── Checkbox column in table ── */
 .results-table .checkbox-cell {
   width: 40px;
@@ -581,6 +737,19 @@ body {
 
 /* ── Responsive: Tablet (< 768px) ── */
 @media (max-width: 767px) {
+  .comparison-charts {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .radar-chart__legend,
+  .bar-chart__legend {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
   .app {
     padding: 0.75rem;
   }
