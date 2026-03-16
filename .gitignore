@@ -43,6 +43,9 @@ htmlcov/
 # Claude Code
 .claude/
 
+# RTK (Rust Token Killer)
+.rtk/
+
 # SBOM artifacts
 *.cdx.json
 

@@ -1,8 +1,27 @@
-export default function FilterBar({ facets, filters, onChange, onClear }) {
+import { useState } from "react";
+
+export default function FilterBar({
+  facets,
+  filters,
+  onChange,
+  onClear,
+  collapsible,
+}) {
+  const [expanded, setExpanded] = useState(false);
   const update = (key, value) => onChange({ ...filters, [key]: value });
 
-  return (
-    <div className="filter-bar">
+  const activeCount = Object.values(filters).filter((v) => v !== "").length;
+
+  const barClass = [
+    "filter-bar",
+    collapsible ? "filter-bar--collapsible" : "",
+    collapsible && !expanded ? "filter-bar--collapsed" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const filterContent = (
+    <>
       <div className="filter-group">
         <label htmlFor="filter-benchmark">Benchmark</label>
         <select
@@ -94,6 +113,35 @@ export default function FilterBar({ facets, filters, onChange, onClear }) {
           Clear Filters
         </button>
       </div>
+    </>
+  );
+
+  return (
+    <div className={barClass}>
+      {collapsible && (
+        <button
+          type="button"
+          className="filter-toggle"
+          onClick={() => setExpanded((prev) => !prev)}
+          aria-expanded={expanded}
+          aria-controls="filter-content"
+        >
+          <span>
+            Filters
+            {activeCount > 0 && (
+              <span className="filter-badge">{activeCount}</span>
+            )}
+          </span>
+          <span className="chevron">{"\u25BC"}</span>
+        </button>
+      )}
+      {collapsible ? (
+        <div className="filter-content" id="filter-content">
+          {filterContent}
+        </div>
+      ) : (
+        filterContent
+      )}
     </div>
   );
 }

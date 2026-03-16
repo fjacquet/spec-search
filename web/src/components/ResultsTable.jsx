@@ -14,7 +14,16 @@ const COLUMNS = [
   { key: "published", label: "Published" },
 ];
 
-export default function ResultsTable({ data, sortConfig, onSort }) {
+export default function ResultsTable({
+  data,
+  sortConfig,
+  onSort,
+  selected = [],
+  onToggleSelection,
+}) {
+  const selectedIds = new Set(selected.map((s) => s.id));
+  const selectedBenchmark = selected.length > 0 ? selected[0].benchmark : null;
+
   const handleSort = (key) => {
     if (sortConfig.key === key) {
       onSort({
@@ -32,11 +41,20 @@ export default function ResultsTable({ data, sortConfig, onSort }) {
     return sortConfig.direction === "asc" ? "\u25B2" : "\u25BC";
   };
 
+  const isDisabled = (row) => {
+    if (selectedIds.has(row.id)) return false;
+    if (selected.length >= 2) return true;
+    if (selectedBenchmark !== null && row.benchmark !== selectedBenchmark)
+      return true;
+    return false;
+  };
+
   return (
     <div className="table-container">
       <table className="results-table">
         <thead>
           <tr>
+            <th className="checkbox-cell" aria-label="Select for comparison" />
             {COLUMNS.map((col) => (
               <th key={col.key} onClick={() => handleSort(col.key)}>
                 {col.label}
@@ -47,28 +65,48 @@ export default function ResultsTable({ data, sortConfig, onSort }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
-            <tr key={row.id}>
-              {COLUMNS.map((col) => (
-                <td key={col.key} className={col.numeric ? "num" : ""}>
-                  {row[col.key] ?? "—"}
+          {data.map((row) => {
+            const checked = selectedIds.has(row.id);
+            const disabled = isDisabled(row);
+            return (
+              <tr key={row.id} className={checked ? "row--selected" : ""}>
+                <td className="checkbox-cell">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={disabled}
+                    onChange={() => onToggleSelection(row)}
+                    aria-label={`Compare ${row.processor ?? "system"}`}
+                    title={
+                      disabled &&
+                      selectedBenchmark &&
+                      row.benchmark !== selectedBenchmark
+                        ? "Same benchmark required"
+                        : undefined
+                    }
+                  />
                 </td>
-              ))}
-              <td>
-                {row.resultUrl ? (
-                  <a
-                    href={specUrl(row.resultUrl)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                ) : (
-                  "—"
-                )}
-              </td>
-            </tr>
-          ))}
+                {COLUMNS.map((col) => (
+                  <td key={col.key} className={col.numeric ? "num" : ""}>
+                    {row[col.key] ?? "—"}
+                  </td>
+                ))}
+                <td>
+                  {row.resultUrl ? (
+                    <a
+                      href={specUrl(row.resultUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
