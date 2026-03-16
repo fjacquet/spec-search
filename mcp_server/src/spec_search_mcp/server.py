@@ -15,6 +15,12 @@ mcp = FastMCP(
 )
 
 VALID_BENCHMARKS = ["CINT2017", "CFP2017", "CINT2017rate", "CFP2017rate"]
+BENCHMARK_LABELS = {
+    "CINT2017": "Integer Speed",
+    "CFP2017": "FP Speed",
+    "CINT2017rate": "Integer Rate",
+    "CFP2017rate": "FP Rate",
+}
 SORT_COLUMNS = {
     "peak_result": "peakResult",
     "base_result": "baseResult",
@@ -25,7 +31,11 @@ SORT_COLUMNS = {
 
 def _df_to_records(df, limit: int = 20) -> list[dict]:
     """Convert DataFrame rows to list of dicts, dropping NaN."""
-    return df.head(limit).where(df.notna(), None).to_dict(orient="records")
+    records = df.head(limit).where(df.notna(), None).to_dict(orient="records")
+    for r in records:
+        bm = r.get("benchmark", "")
+        r["benchmarkLabel"] = BENCHMARK_LABELS.get(bm, bm)
+    return records
 
 
 @mcp.tool
@@ -185,7 +195,11 @@ def get_statistics(
         .reset_index()
     )
 
-    return stats.to_dict(orient="records")
+    records = stats.to_dict(orient="records")
+    for r in records:
+        if "benchmark" in r:
+            r["benchmarkLabel"] = BENCHMARK_LABELS.get(r["benchmark"], r["benchmark"])
+    return records
 
 
 def main():

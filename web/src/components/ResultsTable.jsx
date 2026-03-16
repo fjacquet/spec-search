@@ -1,3 +1,4 @@
+import { benchmarkLabel } from "../constants/benchmarks.js";
 import { specUrl } from "../hooks/useSearch";
 
 const COLUMNS = [
@@ -88,7 +89,13 @@ export default function ResultsTable({
                 </td>
                 {COLUMNS.map((col) => (
                   <td key={col.key} className={col.numeric ? "num" : ""}>
-                    {row[col.key] ?? "—"}
+                    {col.key === "benchmark" ? (
+                      <span title={row[col.key]}>
+                        {benchmarkLabel(row[col.key] ?? "")}
+                      </span>
+                    ) : (
+                      (row[col.key] ?? "—")
+                    )}
                   </td>
                 ))}
                 <td>

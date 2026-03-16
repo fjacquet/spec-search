@@ -1,3 +1,4 @@
+import { benchmarkLabel } from "../constants/benchmarks.js";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import BarChart from "./BarChart.jsx";
 import RadarChart from "./RadarChart.jsx";
@@ -18,6 +19,12 @@ const FIELDS = [
   { key: "hwAvail", label: "HW Available" },
   { key: "published", label: "Published" },
 ];
+
+function formatValue(field, val) {
+  if (val == null) return "—";
+  if (field.key === "benchmark") return benchmarkLabel(val);
+  return val;
+}
 
 function formatDelta(a, b) {
   if (a == null || b == null) return null;
@@ -59,7 +66,7 @@ function DesktopGrid({ systems }) {
           <div key={field.key} style={{ display: "contents" }}>
             <div className="comparison-grid__label">{field.label}</div>
             <div className={classA}>
-              {valA ?? "—"}
+              {formatValue(field, valA)}
               {delta && delta.diff !== 0 && (
                 <span className="comparison-grid__delta">
                   ({delta.sign}
@@ -68,7 +75,7 @@ function DesktopGrid({ systems }) {
                 </span>
               )}
             </div>
-            <div className={classB}>{valB ?? "—"}</div>
+            <div className={classB}>{formatValue(field, valB)}</div>
           </div>
         );
       })}
@@ -93,7 +100,7 @@ function MobileComparison({ systems }) {
               <span className="comparison-mobile-row__label">
                 {field.label}
               </span>
-              <span>{sys[field.key] ?? "—"}</span>
+              <span>{formatValue(field, sys[field.key])}</span>
             </div>
           ))}
         </div>

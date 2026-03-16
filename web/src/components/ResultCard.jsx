@@ -1,3 +1,4 @@
+import { benchmarkLabel } from "../constants/benchmarks.js";
 import { specUrl } from "../hooks/useSearch";
 
 export default function ResultCard({ row, selected, disabled, onToggle }) {
@@ -28,7 +29,9 @@ export default function ResultCard({ row, selected, disabled, onToggle }) {
         {row.processorMhz ?? "—"} MHz
       </div>
       <div className="result-card__meta">
-        <span className="result-card__benchmark">{row.benchmark ?? "—"}</span>
+        <span className="result-card__benchmark" title={row.benchmark}>
+          {benchmarkLabel(row.benchmark ?? "")}
+        </span>
         <span>{row.hwAvail ?? "—"}</span>
         {row.resultUrl ? (
           <a

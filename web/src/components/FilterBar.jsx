@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { benchmarkLabel } from "../constants/benchmarks.js";
 
 export default function FilterBar({
   facets,
@@ -32,7 +33,7 @@ export default function FilterBar({
           <option value="">All</option>
           {facets.benchmarks.map((b) => (
             <option key={b} value={b}>
-              {b}
+              {benchmarkLabel(b)} ({b})
             </option>
           ))}
         </select>
