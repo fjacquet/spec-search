@@ -66,6 +66,17 @@ export default function FilterBar({
       </div>
 
       <div className="filter-group">
+        <label htmlFor="filter-system">System</label>
+        <input
+          id="filter-system"
+          type="text"
+          placeholder="e.g. R770"
+          value={filters.system}
+          onChange={(e) => update("system", e.target.value)}
+        />
+      </div>
+
+      <div className="filter-group">
         <label htmlFor="filter-min-cores">Cores</label>
         <div className="filter-range">
           <input

@@ -20,6 +20,10 @@ export function useSearch(data, filters, sortConfig, page, pageSize) {
       const q = filters.processor.toLowerCase();
       filtered = filtered.filter((r) => r.processor?.toLowerCase().includes(q));
     }
+    if (filters.system) {
+      const q = filters.system.toLowerCase();
+      filtered = filtered.filter((r) => r.system?.toLowerCase().includes(q));
+    }
     if (filters.minCores) {
       const min = Number(filters.minCores);
       filtered = filtered.filter((r) => r.cores >= min);
