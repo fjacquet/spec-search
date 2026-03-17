@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0d6efd"/>
+  <rect x="8" y="8" width="16" height="16" rx="2" fill="#ffffff" opacity="0.95"/>
+  <rect x="11" y="11" width="10" height="10" rx="1" fill="#0d6efd" opacity="0.15"/>
+  <text x="13" y="19.5" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="5.5" font-weight="800" fill="#0d6efd" letter-spacing="0.2">SPEC</text>
+  <circle cx="19.5" cy="19.5" r="2.5" fill="none" stroke="#0b5ed7" stroke-width="1"/>
+  <line x1="21.3" y1="21.3" x2="22.8" y2="22.8" stroke="#0b5ed7" stroke-width="1" stroke-linecap="round"/>
+</svg>
