@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { benchmarkLabel } from "../constants/benchmarks.js";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import BarChart, { prepareBarSvg } from "./BarChart.jsx";
+import { exportToPptx } from "./exportPptx.js";
 import RadarChart, { prepareRadarSvg } from "./RadarChart.jsx";
 
 const FIELDS = [
@@ -260,6 +261,21 @@ export default function ComparisonView({ systems, onClose }) {
             }
           >
             Export Charts PNG
+          </button>
+          <button
+            type="button"
+            className="btn-export"
+            onClick={() =>
+              exportToPptx({
+                systemA: systems[0],
+                systemB: systems[1],
+                chartsContainerEl: chartsRef.current,
+                prepareRadarSvg,
+                prepareBarSvg,
+              })
+            }
+          >
+            Export PPTX
           </button>
           <button
             type="button"
