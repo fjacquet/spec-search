@@ -43,6 +43,9 @@ htmlcov/
 # Claude Code
 .claude/
 
+# Superpowers brainstorm
+.superpowers/
+
 # RTK (Rust Token Killer)
 .rtk/
 
