@@ -592,8 +592,9 @@ body {
 /* ── Comparison Charts ── */
 .comparison-charts {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 1rem;
+  align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
   background: var(--bg-secondary);
@@ -610,7 +611,7 @@ body {
 
 .radar-chart__svg {
   width: 100%;
-  max-width: 320px;
+  max-width: 280px;
 }
 
 .radar-chart__ring {
@@ -688,7 +689,6 @@ body {
 
 .bar-chart__svg {
   width: 100%;
-  max-width: 400px;
 }
 
 .bar-chart__label {

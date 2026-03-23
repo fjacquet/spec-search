@@ -123,6 +123,7 @@ export function buildSlideData(systemA, systemB) {
 function svgToBase64Png(svgEl, prepareFn) {
   return new Promise((resolve) => {
     const { clone, w, h } = prepareFn(svgEl);
+    const scale = 2;
     const url = URL.createObjectURL(
       new Blob([new XMLSerializer().serializeToString(clone)], {
         type: "image/svg+xml",
@@ -131,14 +132,14 @@ function svgToBase64Png(svgEl, prepareFn) {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
+      canvas.width = w * scale;
+      canvas.height = h * scale;
       const ctx = canvas.getContext("2d");
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, w, h);
-      ctx.drawImage(img, 0, 0);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL("image/png"));
+      resolve({ data: canvas.toDataURL("image/png"), aspect: w / h });
     };
     img.src = url;
   });
@@ -154,7 +155,7 @@ export async function exportToPptx({
   const svgEls = chartsContainerEl.querySelectorAll("svg");
   if (svgEls.length < 2) return;
 
-  const [radarBase64, barBase64] = await Promise.all([
+  const [radarResult, barResult] = await Promise.all([
     svgToBase64Png(svgEls[0], prepareRadarSvg),
     svgToBase64Png(svgEls[1], prepareBarSvg),
   ]);
@@ -207,24 +208,39 @@ export async function exportToPptx({
     line: { color: COLOR_BLUE, width: 2 },
   });
 
-  // Radar chart image (left)
+  // Chart placement: radar (square) gets left ~40%, bar (wider) gets right ~60%
+  const chartMaxH = 2.8;
+  const slideContentW = 12.33;
+  const chartGap = 0.4;
+
+  // Radar chart — square aspect ratio, sized to max height
+  const radarH = chartMaxH;
+  const radarW = radarH * radarResult.aspect;
+  const radarX = 0.5 + (slideContentW * 0.4 - radarW) / 2;
   slide.addImage({
-    data: radarBase64,
-    x: 0.5,
+    data: radarResult.data,
+    x: radarX,
     y: 1.0,
-    w: 5.9,
-    h: 2.8,
-    sizing: { type: "contain", w: 5.9, h: 2.8 },
+    w: radarW,
+    h: radarH,
   });
 
-  // Bar chart image (right)
+  // Bar chart — wider aspect ratio, fill the right 60%
+  const barZoneW = slideContentW * 0.6 - chartGap;
+  let barW = chartMaxH * barResult.aspect;
+  let barH = chartMaxH;
+  if (barW > barZoneW) {
+    barW = barZoneW;
+    barH = barW / barResult.aspect;
+  }
+  const barX = 0.5 + slideContentW * 0.4 + chartGap + (barZoneW - barW) / 2;
+  const barY = 1.0 + (chartMaxH - barH) / 2;
   slide.addImage({
-    data: barBase64,
-    x: 6.8,
-    y: 1.0,
-    w: 5.9,
-    h: 2.8,
-    sizing: { type: "contain", w: 5.9, h: 2.8 },
+    data: barResult.data,
+    x: barX,
+    y: barY,
+    w: barW,
+    h: barH,
   });
 
   // Legend
