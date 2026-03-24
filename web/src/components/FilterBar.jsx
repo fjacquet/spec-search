@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { benchmarkLabel } from "../constants/benchmarks.js";
+import { useSuite } from "../hooks/useSuite.js";
 
 export default function FilterBar({
   facets,
@@ -8,6 +8,7 @@ export default function FilterBar({
   onClear,
   collapsible,
 }) {
+  const suite = useSuite();
   const [expanded, setExpanded] = useState(false);
   const update = (key, value) => onChange({ ...filters, [key]: value });
 
@@ -33,7 +34,7 @@ export default function FilterBar({
           <option value="">All</option>
           {facets.benchmarks.map((b) => (
             <option key={b} value={b}>
-              {benchmarkLabel(b)} ({b})
+              {suite.benchmarkLabels[b] ?? b} ({b})
             </option>
           ))}
         </select>
@@ -99,7 +100,7 @@ export default function FilterBar({
       </div>
 
       <div className="filter-group">
-        <label htmlFor="filter-min-peak">Min Peak Score</label>
+        <label htmlFor="filter-min-peak">Min {suite.peakLabel}</label>
         <input
           id="filter-min-peak"
           type="number"
@@ -110,7 +111,7 @@ export default function FilterBar({
       </div>
 
       <div className="filter-group">
-        <label htmlFor="filter-min-base">Min Base Score</label>
+        <label htmlFor="filter-min-base">Min {suite.baseLabel}</label>
         <input
           id="filter-min-base"
           type="number"

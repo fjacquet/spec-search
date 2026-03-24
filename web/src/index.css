@@ -54,6 +54,35 @@ body {
   font-size: 0.9rem;
 }
 
+/* Suite Selector */
+.suite-selector {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.suite-btn {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.suite-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.suite-btn--active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
 /* Filter Bar */
 .filter-bar {
   display: flex;

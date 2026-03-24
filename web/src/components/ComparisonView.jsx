@@ -1,17 +1,17 @@
 import { useRef, useState } from "react";
-import { benchmarkLabel } from "../constants/benchmarks.js";
 import { useMediaQuery } from "../hooks/useMediaQuery";
+import { useSuite } from "../hooks/useSuite.js";
 import BarChart, { prepareBarSvg } from "./BarChart.jsx";
 import { exportToPptx } from "./exportPptx.js";
 import RadarChart, { prepareRadarSvg } from "./RadarChart.jsx";
 
-const FIELDS = [
+const BASE_FIELDS = [
   { key: "processor", label: "Processor" },
   { key: "vendor", label: "Vendor" },
   { key: "system", label: "System" },
   { key: "benchmark", label: "Benchmark" },
-  { key: "peakResult", label: "Peak Score", numeric: true },
-  { key: "baseResult", label: "Base Score", numeric: true },
+  { key: "peakResult", label: null, numeric: true },
+  { key: "baseResult", label: null, numeric: true },
   { key: "cores", label: "Cores", numeric: true },
   { key: "chips", label: "Chips", numeric: true },
   { key: "threadsPerCore", label: "Threads/Core", numeric: true },
@@ -22,9 +22,21 @@ const FIELDS = [
   { key: "published", label: "Published" },
 ];
 
-function formatValue(field, val) {
+function buildFields(suite) {
+  const fields = BASE_FIELDS.map((f) => {
+    if (f.key === "peakResult") return { ...f, label: suite.peakScoreLabel };
+    if (f.key === "baseResult") return { ...f, label: suite.baseScoreLabel };
+    return f;
+  });
+  // Insert extra fields before memory
+  const memIdx = fields.findIndex((f) => f.key === "memory");
+  fields.splice(memIdx, 0, ...suite.extraComparisonFields);
+  return fields;
+}
+
+function formatValue(field, val, suite) {
   if (val == null) return "—";
-  if (field.key === "benchmark") return benchmarkLabel(val);
+  if (field.key === "benchmark") return suite.benchmarkLabels[val] ?? val;
   return val;
 }
 
@@ -36,7 +48,7 @@ function formatDelta(a, b) {
   return { diff, sign, pct };
 }
 
-function DesktopGrid({ systems }) {
+function DesktopGrid({ systems, fields, suite }) {
   const [a, b] = systems;
 
   return (
@@ -49,7 +61,7 @@ function DesktopGrid({ systems }) {
         {b.processor ?? "System B"}
       </div>
 
-      {FIELDS.map((field) => {
+      {fields.map((field) => {
         const valA = a[field.key];
         const valB = b[field.key];
         const delta = field.numeric ? formatDelta(valA, valB) : null;
@@ -68,7 +80,7 @@ function DesktopGrid({ systems }) {
           <div key={field.key} style={{ display: "contents" }}>
             <div className="comparison-grid__label">{field.label}</div>
             <div className={classA}>
-              {formatValue(field, valA)}
+              {formatValue(field, valA, suite)}
               {delta && delta.diff !== 0 && (
                 <span className="comparison-grid__delta">
                   ({delta.sign}
@@ -77,7 +89,7 @@ function DesktopGrid({ systems }) {
                 </span>
               )}
             </div>
-            <div className={classB}>{formatValue(field, valB)}</div>
+            <div className={classB}>{formatValue(field, valB, suite)}</div>
           </div>
         );
       })}
@@ -85,10 +97,10 @@ function DesktopGrid({ systems }) {
   );
 }
 
-function MobileComparison({ systems }) {
+function MobileComparison({ systems, fields, suite }) {
   const [a, b] = systems;
 
-  const numericFields = FIELDS.filter((f) => f.numeric);
+  const numericFields = fields.filter((f) => f.numeric);
 
   return (
     <div>
@@ -97,12 +109,12 @@ function MobileComparison({ systems }) {
           <h3>
             System {i + 1}: {sys.processor ?? "Unknown"}
           </h3>
-          {FIELDS.map((field) => (
+          {fields.map((field) => (
             <div key={field.key} className="comparison-mobile-row">
               <span className="comparison-mobile-row__label">
                 {field.label}
               </span>
-              <span>{formatValue(field, sys[field.key])}</span>
+              <span>{formatValue(field, sys[field.key], suite)}</span>
             </div>
           ))}
         </div>
@@ -137,17 +149,21 @@ function MobileComparison({ systems }) {
   );
 }
 
-function exportToCsv(systems) {
+function exportToCsv(systems, fields, suite) {
   const [a, b] = systems;
   const header = [
     "Field",
     a.processor ?? "System A",
     b.processor ?? "System B",
   ];
-  const rows = FIELDS.map((f) => [
+  const rows = fields.map((f) => [
     f.label,
-    f.key === "benchmark" ? benchmarkLabel(a[f.key] ?? "") : (a[f.key] ?? ""),
-    f.key === "benchmark" ? benchmarkLabel(b[f.key] ?? "") : (b[f.key] ?? ""),
+    f.key === "benchmark"
+      ? (suite.benchmarkLabels[a[f.key]] ?? a[f.key] ?? "")
+      : (a[f.key] ?? ""),
+    f.key === "benchmark"
+      ? (suite.benchmarkLabels[b[f.key]] ?? b[f.key] ?? "")
+      : (b[f.key] ?? ""),
   ]);
   const csv = [header, ...rows]
     .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
@@ -209,6 +225,8 @@ function exportBothCharts(containerEl, filename) {
 }
 
 export default function ComparisonView({ systems, onClose }) {
+  const suite = useSuite();
+  const fields = buildFields(suite);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [copied, setCopied] = useState(false);
   const chartsRef = useRef(null);
@@ -220,10 +238,14 @@ export default function ComparisonView({ systems, onClose }) {
       a.processor ?? "System A",
       b.processor ?? "System B",
     ];
-    const rows = FIELDS.map((f) => [
+    const rows = fields.map((f) => [
       f.label,
-      f.key === "benchmark" ? benchmarkLabel(a[f.key] ?? "") : (a[f.key] ?? ""),
-      f.key === "benchmark" ? benchmarkLabel(b[f.key] ?? "") : (b[f.key] ?? ""),
+      f.key === "benchmark"
+        ? (suite.benchmarkLabels[a[f.key]] ?? a[f.key] ?? "")
+        : (a[f.key] ?? ""),
+      f.key === "benchmark"
+        ? (suite.benchmarkLabels[b[f.key]] ?? b[f.key] ?? "")
+        : (b[f.key] ?? ""),
     ]);
     const tsv = [header, ...rows].map((r) => r.join("\t")).join("\n");
     navigator.clipboard.writeText(tsv).then(() => {
@@ -243,7 +265,7 @@ export default function ComparisonView({ systems, onClose }) {
           <button
             type="button"
             className="btn-export"
-            onClick={() => exportToCsv(systems)}
+            onClick={() => exportToCsv(systems, fields, suite)}
           >
             Download CSV
           </button>
@@ -272,6 +294,7 @@ export default function ComparisonView({ systems, onClose }) {
                 chartsContainerEl: chartsRef.current,
                 prepareRadarSvg,
                 prepareBarSvg,
+                suite,
               })
             }
           >
@@ -293,9 +316,9 @@ export default function ComparisonView({ systems, onClose }) {
       </div>
 
       {isDesktop ? (
-        <DesktopGrid systems={systems} />
+        <DesktopGrid systems={systems} fields={fields} suite={suite} />
       ) : (
-        <MobileComparison systems={systems} />
+        <MobileComparison systems={systems} fields={fields} suite={suite} />
       )}
     </div>
   );

@@ -5,8 +5,10 @@ import FilterBar from "./components/FilterBar.jsx";
 import Pagination from "./components/Pagination.jsx";
 import ResultsList from "./components/ResultsList.jsx";
 import ResultsTable from "./components/ResultsTable.jsx";
+import { DEFAULT_SUITE, getSuite, SUITE_IDS } from "./constants/suites.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
 import { useSearch } from "./hooks/useSearch.js";
+import { SuiteContext } from "./hooks/useSuite.js";
 
 const EMPTY_FILTERS = {
   benchmark: "",
@@ -32,6 +34,12 @@ const QUERY_PARAM_KEYS = [
   "minBase",
 ];
 
+function suiteFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const s = params.get("suite");
+  return SUITE_IDS.includes(s) ? s : DEFAULT_SUITE;
+}
+
 function filtersFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const initial = { ...EMPTY_FILTERS };
@@ -42,8 +50,9 @@ function filtersFromUrl() {
   return initial;
 }
 
-function filtersToUrl(filters, compareIds) {
+function syncUrl(suiteId, filters, compareIds) {
   const params = new URLSearchParams();
+  if (suiteId !== DEFAULT_SUITE) params.set("suite", suiteId);
   for (const key of QUERY_PARAM_KEYS) {
     if (filters[key]) params.set(key, filters[key]);
   }
@@ -64,6 +73,8 @@ function compareIdsFromUrl() {
 }
 
 export default function App() {
+  const [suiteId, setSuiteId] = useState(suiteFromUrl);
+  const suite = getSuite(suiteId);
   const [data, setData] = useState(null);
   const [facets, setFacets] = useState(null);
   const [filters, setFilters] = useState(filtersFromUrl);
@@ -77,12 +88,14 @@ export default function App() {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
+    setData(null);
+    setFacets(null);
     Promise.all([
-      fetch(`${import.meta.env.BASE_URL}data/results.json`).then((r) =>
-        r.json(),
+      fetch(`${import.meta.env.BASE_URL}data/${suiteId}/results.json`).then(
+        (r) => r.json(),
       ),
-      fetch(`${import.meta.env.BASE_URL}data/facets.json`).then((r) =>
-        r.json(),
+      fetch(`${import.meta.env.BASE_URL}data/${suiteId}/facets.json`).then(
+        (r) => r.json(),
       ),
     ]).then(([results, facetsData]) => {
       setData(results);
@@ -98,11 +111,21 @@ export default function App() {
         }
       }
     });
-  }, []);
+  }, [suiteId]);
+
+  const handleSuiteChange = (newSuiteId) => {
+    setSuiteId(newSuiteId);
+    setFilters({ ...EMPTY_FILTERS });
+    setSelected([]);
+    setShowComparison(false);
+    setPage(1);
+    setSortConfig({ key: "peakResult", direction: "desc" });
+    syncUrl(newSuiteId, EMPTY_FILTERS);
+  };
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
-    filtersToUrl(newFilters);
+    syncUrl(suiteId, newFilters);
     setPage(1);
   };
 
@@ -124,19 +147,19 @@ export default function App() {
   const clearSelection = () => {
     setSelected([]);
     setShowComparison(false);
-    filtersToUrl(filters);
+    syncUrl(suiteId, filters);
   };
 
   const openComparison = () => {
     if (selected.length === 2) {
       setShowComparison(true);
-      filtersToUrl(filters, `${selected[0].id},${selected[1].id}`);
+      syncUrl(suiteId, filters, `${selected[0].id},${selected[1].id}`);
     }
   };
 
   const closeComparison = () => {
     setShowComparison(false);
-    filtersToUrl(filters);
+    syncUrl(suiteId, filters);
   };
 
   const { total, pageData, totalPages } = useSearch(
@@ -153,76 +176,92 @@ export default function App() {
 
   if (showComparison && selected.length === 2) {
     return (
-      <div className="app">
-        <ComparisonView systems={selected} onClose={closeComparison} />
-      </div>
+      <SuiteContext.Provider value={suite}>
+        <div className="app">
+          <ComparisonView systems={selected} onClose={closeComparison} />
+        </div>
+      </SuiteContext.Provider>
     );
   }
 
   return (
-    <div className={`app${selected.length > 0 ? " app--with-tray" : ""}`}>
-      <header className="app-header">
-        <img
-          src={`${import.meta.env.BASE_URL}logo.svg`}
-          alt="SPEC Search"
-          className="app-logo"
+    <SuiteContext.Provider value={suite}>
+      <div className={`app${selected.length > 0 ? " app--with-tray" : ""}`}>
+        <header className="app-header">
+          <img
+            src={`${import.meta.env.BASE_URL}logo.svg`}
+            alt="SPEC Search"
+            className="app-logo"
+          />
+          <h1>{suite.name} Results</h1>
+          <div className="suite-selector">
+            {SUITE_IDS.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className={`suite-btn${id === suiteId ? " suite-btn--active" : ""}`}
+                onClick={() => handleSuiteChange(id)}
+              >
+                {getSuite(id).name}
+              </button>
+            ))}
+          </div>
+          <span className="subtitle">
+            {data.length.toLocaleString()} benchmark entries
+          </span>
+        </header>
+
+        <FilterBar
+          facets={facets}
+          filters={filters}
+          onChange={handleFiltersChange}
+          onClear={() => handleFiltersChange(EMPTY_FILTERS)}
+          collapsible={!isDesktop}
         />
-        <h1>SPEC CPU2017 Results</h1>
-        <span className="subtitle">
-          {data.length.toLocaleString()} benchmark entries
-        </span>
-      </header>
 
-      <FilterBar
-        facets={facets}
-        filters={filters}
-        onChange={handleFiltersChange}
-        onClear={() => handleFiltersChange(EMPTY_FILTERS)}
-        collapsible={!isDesktop}
-      />
+        <div className="status-bar">
+          <span>
+            Showing {pageData.length} of {total.toLocaleString()} results
+          </span>
+          <span>
+            Sorted by {sortConfig.key} ({sortConfig.direction})
+          </span>
+        </div>
 
-      <div className="status-bar">
-        <span>
-          Showing {pageData.length} of {total.toLocaleString()} results
-        </span>
-        <span>
-          Sorted by {sortConfig.key} ({sortConfig.direction})
-        </span>
+        {isDesktop ? (
+          <ResultsTable
+            data={pageData}
+            sortConfig={sortConfig}
+            onSort={handleSort}
+            selected={selected}
+            onToggleSelection={toggleSelection}
+          />
+        ) : (
+          <ResultsList
+            data={pageData}
+            sortConfig={sortConfig}
+            onSort={handleSort}
+            selected={selected}
+            onToggleSelection={toggleSelection}
+          />
+        )}
+
+        {totalPages > 1 && (
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        )}
+
+        {selected.length > 0 && (
+          <ComparisonTray
+            selected={selected}
+            onCompare={openComparison}
+            onClear={clearSelection}
+          />
+        )}
       </div>
-
-      {isDesktop ? (
-        <ResultsTable
-          data={pageData}
-          sortConfig={sortConfig}
-          onSort={handleSort}
-          selected={selected}
-          onToggleSelection={toggleSelection}
-        />
-      ) : (
-        <ResultsList
-          data={pageData}
-          sortConfig={sortConfig}
-          onSort={handleSort}
-          selected={selected}
-          onToggleSelection={toggleSelection}
-        />
-      )}
-
-      {totalPages > 1 && (
-        <Pagination
-          page={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
-      )}
-
-      {selected.length > 0 && (
-        <ComparisonTray
-          selected={selected}
-          onCompare={openComparison}
-          onClear={clearSelection}
-        />
-      )}
-    </div>
+    </SuiteContext.Provider>
   );
 }

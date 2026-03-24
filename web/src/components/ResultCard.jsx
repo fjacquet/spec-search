@@ -1,7 +1,8 @@
-import { benchmarkLabel } from "../constants/benchmarks.js";
 import { specUrl } from "../hooks/useSearch";
+import { useSuite } from "../hooks/useSuite.js";
 
 export default function ResultCard({ row, selected, disabled, onToggle }) {
+  const suite = useSuite();
   const isSelected = selected;
 
   return (
@@ -18,10 +19,10 @@ export default function ResultCard({ row, selected, disabled, onToggle }) {
       </div>
       <div className="result-card__scores">
         <span>
-          Peak: <strong>{row.peakResult ?? "—"}</strong>
+          {suite.peakLabel}: <strong>{row.peakResult ?? "—"}</strong>
         </span>
         <span>
-          Base: <strong>{row.baseResult ?? "—"}</strong>
+          {suite.baseLabel}: <strong>{row.baseResult ?? "—"}</strong>
         </span>
       </div>
       <div className="result-card__details">
@@ -30,7 +31,7 @@ export default function ResultCard({ row, selected, disabled, onToggle }) {
       </div>
       <div className="result-card__meta">
         <span className="result-card__benchmark" title={row.benchmark}>
-          {benchmarkLabel(row.benchmark ?? "")}
+          {suite.benchmarkLabels[row.benchmark] ?? row.benchmark ?? "—"}
         </span>
         <span>{row.hwAvail ?? "—"}</span>
         {row.resultUrl ? (

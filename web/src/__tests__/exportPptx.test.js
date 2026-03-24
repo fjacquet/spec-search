@@ -23,7 +23,11 @@ vi.mock("pptxgenjs", () => {
   };
 });
 
-const { buildSlideData, FIELDS } = await import("../components/exportPptx.js");
+const { buildSlideData } = await import("../components/exportPptx.js");
+const { getSuite } = await import("../constants/suites.js");
+
+const CPU2017_SUITE = getSuite("cpu2017");
+const JBB2015_SUITE = getSuite("jbb2015");
 
 const SYSTEM_A = {
   processor: "AMD EPYC 9754",
@@ -59,33 +63,15 @@ const SYSTEM_B = {
   published: "Apr-2025",
 };
 
-describe("FIELDS", () => {
-  it("contains 14 comparison fields", () => {
-    expect(FIELDS).toHaveLength(14);
-  });
-
-  it("marks numeric fields correctly", () => {
-    const numericKeys = FIELDS.filter((f) => f.numeric).map((f) => f.key);
-    expect(numericKeys).toEqual([
-      "peakResult",
-      "baseResult",
-      "cores",
-      "chips",
-      "threadsPerCore",
-      "processorMhz",
-    ]);
-  });
-});
-
-describe("buildSlideData", () => {
-  it("returns table rows for all 14 fields", () => {
-    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B);
+describe("buildSlideData (CPU2017)", () => {
+  it("returns table rows for all 14 base fields", () => {
+    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     // 1 header + 14 data rows
     expect(tableRows).toHaveLength(15);
   });
 
   it("header row has 4 columns: Metric, System A, System B, Delta", () => {
-    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B);
+    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     const header = tableRows[0];
     expect(header).toHaveLength(4);
     expect(header[0].text).toBe("Metric");
@@ -95,7 +81,7 @@ describe("buildSlideData", () => {
   });
 
   it("computes positive delta for peakResult (A > B)", () => {
-    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B);
+    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     const peakRow = tableRows.find(
       (row) => row[0] && row[0].text === "Peak Score",
     );
@@ -104,13 +90,13 @@ describe("buildSlideData", () => {
   });
 
   it("computes negative delta when B > A", () => {
-    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B);
+    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     const mhzRow = tableRows.find((row) => row[0] && row[0].text === "MHz");
     expect(mhzRow[3].text).toMatch(/^-/);
   });
 
   it("shows dash for string fields delta", () => {
-    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B);
+    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     const processorRow = tableRows.find(
       (row) => row[0] && row[0].text === "Processor",
     );
@@ -118,26 +104,68 @@ describe("buildSlideData", () => {
   });
 
   it("shows 0% for equal numeric values", () => {
-    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B);
+    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     const chipsRow = tableRows.find((row) => row[0] && row[0].text === "Chips");
     expect(chipsRow[3].text).toBe("0%");
   });
 
   it("returns title with both processor names", () => {
-    const { title } = buildSlideData(SYSTEM_A, SYSTEM_B);
+    const { title } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     expect(title).toContain("AMD EPYC 9754");
     expect(title).toContain("Intel Xeon w9-3595X");
   });
 
-  it("returns subtitle with benchmark label", () => {
-    const { subtitle } = buildSlideData(SYSTEM_A, SYSTEM_B);
+  it("returns subtitle with benchmark label and suite name", () => {
+    const { subtitle } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     expect(subtitle).toContain("Integer Multi-Core");
+    expect(subtitle).toContain("SPEC CPU2017");
   });
 
   it("returns the expected filename", () => {
-    const { filename } = buildSlideData(SYSTEM_A, SYSTEM_B);
+    const { filename } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     expect(filename).toBe(
       "comparison-AMD_EPYC_9754-vs-Intel_Xeon_w9-3595X.pptx",
     );
+  });
+});
+
+describe("buildSlideData (JBB2015)", () => {
+  const JBB_A = {
+    ...SYSTEM_A,
+    benchmark: "JBB2015MULTI",
+    peakResult: 362000,
+    baseResult: 335166,
+    jvm: "Oracle Java SE 17.0.7",
+    jvmVendor: "Oracle",
+    nodes: 1,
+  };
+  const JBB_B = {
+    ...SYSTEM_B,
+    benchmark: "JBB2015MULTI",
+    peakResult: 280000,
+    baseResult: 260000,
+    jvm: "OpenJDK 17.0.8",
+    jvmVendor: "Red Hat",
+    nodes: 1,
+  };
+
+  it("includes extra JBB2015 fields in table rows", () => {
+    const { tableRows } = buildSlideData(JBB_A, JBB_B, JBB2015_SUITE);
+    // 1 header + 14 base + 3 extra (jvm, jvmVendor, nodes)
+    expect(tableRows).toHaveLength(18);
+  });
+
+  it("uses Max jOPS label for peak score", () => {
+    const { tableRows } = buildSlideData(JBB_A, JBB_B, JBB2015_SUITE);
+    const peakRow = tableRows.find(
+      (row) => row[0] && row[0].text === "Max jOPS",
+    );
+    expect(peakRow).toBeDefined();
+  });
+
+  it("subtitle contains SPECjbb2015", () => {
+    const { subtitle } = buildSlideData(JBB_A, JBB_B, JBB2015_SUITE);
+    expect(subtitle).toContain("SPECjbb2015");
+    expect(subtitle).toContain("Multi-JVM");
   });
 });

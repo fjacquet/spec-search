@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useSuite } from "../hooks/useSuite.js";
 
 const RADAR_CSS = `
   .radar-chart__ring { fill: none; stroke: #dee2e6; stroke-width: 0.5; }
@@ -47,14 +48,22 @@ function exportPng(svgEl, filename) {
   img.src = url;
 }
 
-const CHART_METRICS = [
-  { key: "peakResult", label: "Peak" },
-  { key: "baseResult", label: "Base" },
+const BASE_METRICS = [
+  { key: "peakResult", label: null },
+  { key: "baseResult", label: null },
   { key: "cores", label: "Cores" },
   { key: "processorMhz", label: "MHz" },
   { key: "chips", label: "Chips" },
   { key: "threadsPerCore", label: "Threads" },
 ];
+
+function buildMetrics(suite) {
+  return BASE_METRICS.map((m) => {
+    if (m.key === "peakResult") return { ...m, label: suite.peakLabel };
+    if (m.key === "baseResult") return { ...m, label: suite.baseLabel };
+    return m;
+  });
+}
 
 const SIZE = 300;
 const CX = SIZE / 2;
@@ -68,6 +77,8 @@ function polarToCart(angle, r) {
 }
 
 export default function RadarChart({ systems }) {
+  const suite = useSuite();
+  const CHART_METRICS = buildMetrics(suite);
   const svgRef = useRef(null);
   const [a, b] = systems;
   const count = CHART_METRICS.length;

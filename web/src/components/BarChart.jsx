@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useSuite } from "../hooks/useSuite.js";
 
 const BAR_CSS = `
   .bar-chart__label { font-size: 11px; fill: #6c757d; font-family: sans-serif; }
@@ -44,13 +45,21 @@ function exportPng(svgEl, filename) {
   img.src = url;
 }
 
-const BAR_METRICS = [
-  { key: "peakResult", label: "Peak Score" },
-  { key: "baseResult", label: "Base Score" },
+const BASE_METRICS = [
+  { key: "peakResult", label: null },
+  { key: "baseResult", label: null },
   { key: "cores", label: "Cores" },
   { key: "processorMhz", label: "MHz" },
   { key: "chips", label: "Chips" },
 ];
+
+function buildMetrics(suite) {
+  return BASE_METRICS.map((m) => {
+    if (m.key === "peakResult") return { ...m, label: suite.peakScoreLabel };
+    if (m.key === "baseResult") return { ...m, label: suite.baseScoreLabel };
+    return m;
+  });
+}
 
 const BAR_HEIGHT = 22;
 const GAP = 8;
@@ -58,6 +67,8 @@ const LABEL_WIDTH = 90;
 const MAX_BAR = 200;
 
 export default function BarChart({ systems }) {
+  const suite = useSuite();
+  const BAR_METRICS = buildMetrics(suite);
   const svgRef = useRef(null);
   const [a, b] = systems;
 

@@ -1,32 +1,47 @@
 #!/usr/bin/env python3
-"""FastMCP server for SPEC CPU2017 benchmark search."""
+"""FastMCP server for SPEC benchmark search (CPU2017 and JBB2015)."""
 
 from fastmcp import FastMCP
 
-from spec_search_mcp.data_loader import load_data
+from spec_search_mcp.data_loader import VALID_SUITES, load_data
 
 mcp = FastMCP(
     name="spec-search",
     instructions=(
-        "Search SPEC CPU2017 benchmark results. Use search_benchmarks for filtered queries, "
+        "Search SPEC benchmark results (CPU2017 and JBB2015). "
+        "All tools accept a 'suite' parameter: 'cpu2017' (default) or 'jbb2015'. "
+        "Use search_benchmarks for filtered queries, "
         "get_top_results for rankings, compare_processors for side-by-side comparison, "
         "and get_statistics for aggregated data."
     ),
 )
 
-VALID_BENCHMARKS = ["CINT2017", "CFP2017", "CINT2017rate", "CFP2017rate"]
 BENCHMARK_LABELS = {
+    # CPU2017
     "CINT2017": "Integer Per-Core",
     "CFP2017": "FP Per-Core",
     "CINT2017rate": "Integer Multi-Core",
     "CFP2017rate": "FP Multi-Core",
+    # JBB2015
+    "JBB2015MULTI": "Multi-JVM",
+    "JBB2015COMP": "Composite",
+    "JBB2015DIST": "Distributed",
 }
+
 SORT_COLUMNS = {
     "peak_result": "peakResult",
     "base_result": "baseResult",
     "cores": "cores",
     "processor_mhz": "processorMhz",
 }
+
+
+def _validate_suite(suite: str) -> str:
+    s = suite.lower().strip()
+    if s not in VALID_SUITES:
+        msg = f"Invalid suite '{suite}'. Valid: {VALID_SUITES}"
+        raise ValueError(msg)
+    return s
 
 
 def _df_to_records(df, limit: int = 20) -> list[dict]:
@@ -40,6 +55,7 @@ def _df_to_records(df, limit: int = 20) -> list[dict]:
 
 @mcp.tool
 def search_benchmarks(
+    suite: str = "cpu2017",
     benchmark: str | None = None,
     vendor: str | None = None,
     processor: str | None = None,
@@ -52,22 +68,23 @@ def search_benchmarks(
     sort_order: str = "desc",
     limit: int = 20,
 ) -> list[dict]:
-    """Search SPEC CPU2017 benchmark results with filters.
+    """Search SPEC benchmark results with filters.
 
     Args:
-        benchmark: Filter by benchmark type (CINT2017, CFP2017, CINT2017rate, CFP2017rate)
+        suite: Benchmark suite (cpu2017 or jbb2015)
+        benchmark: Filter by benchmark type (e.g. CINT2017, JBB2015MULTI)
         vendor: Filter by hardware vendor (exact match, case-insensitive)
         processor: Filter by processor name (substring match, case-insensitive)
         min_cores: Minimum number of cores
         max_cores: Maximum number of cores
-        min_peak_result: Minimum peak result score
-        min_base_result: Minimum base result score
+        min_peak_result: Minimum peak/max-jOPS score
+        min_base_result: Minimum base/critical-jOPS score
         os_filter: Filter by operating system (substring match)
         sort_by: Sort column (peak_result, base_result, cores, processor_mhz)
         sort_order: Sort direction (asc or desc)
         limit: Max results to return (1-100, default 20)
     """
-    df = load_data()
+    df = load_data(_validate_suite(suite))
     limit = max(1, min(limit, 100))
 
     if benchmark:
@@ -97,17 +114,19 @@ def search_benchmarks(
 @mcp.tool
 def get_top_results(
     benchmark: str,
+    suite: str = "cpu2017",
     metric: str = "peak",
     limit: int = 10,
 ) -> list[dict]:
     """Get top benchmark results sorted by score.
 
     Args:
-        benchmark: Benchmark type (CINT2017, CFP2017, CINT2017rate, CFP2017rate)
+        benchmark: Benchmark type (e.g. CINT2017, JBB2015MULTI)
+        suite: Benchmark suite (cpu2017 or jbb2015)
         metric: Score metric to rank by (peak or base)
         limit: Number of top results (1-50, default 10)
     """
-    df = load_data()
+    df = load_data(_validate_suite(suite))
     limit = max(1, min(limit, 50))
 
     df = df[df["benchmark"].str.upper() == benchmark.upper()]
@@ -121,6 +140,7 @@ def get_top_results(
 def compare_processors(
     processor1: str,
     processor2: str,
+    suite: str = "cpu2017",
     benchmark: str | None = None,
 ) -> dict:
     """Compare two processors across benchmarks.
@@ -128,9 +148,10 @@ def compare_processors(
     Args:
         processor1: First processor name (substring match)
         processor2: Second processor name (substring match)
+        suite: Benchmark suite (cpu2017 or jbb2015)
         benchmark: Optional benchmark type filter
     """
-    df = load_data()
+    df = load_data(_validate_suite(suite))
 
     if benchmark:
         df = df[df["benchmark"].str.upper() == benchmark.upper()]
@@ -154,6 +175,7 @@ def compare_processors(
 
 @mcp.tool
 def get_statistics(
+    suite: str = "cpu2017",
     benchmark: str | None = None,
     vendor: str | None = None,
     group_by: str = "vendor",
@@ -161,11 +183,12 @@ def get_statistics(
     """Get summary statistics for benchmark results.
 
     Args:
+        suite: Benchmark suite (cpu2017 or jbb2015)
         benchmark: Filter by benchmark type
         vendor: Filter by vendor
         group_by: Group results by (vendor, processor, or benchmark)
     """
-    df = load_data()
+    df = load_data(_validate_suite(suite))
 
     if benchmark:
         df = df[df["benchmark"].str.upper() == benchmark.upper()]

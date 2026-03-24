@@ -11,9 +11,8 @@ node_modules/
 web/dist/
 
 # Generated data (rebuilt from CSV by scripts/convert_csv.py)
-web/public/data/results.json
-web/public/data/facets.json
-web/public/data/processors/
+web/public/data/cpu2017/
+web/public/data/jbb2015/
 
 # MCP server venv and build artifacts
 mcp_server/.venv/

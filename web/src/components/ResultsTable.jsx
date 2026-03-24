@@ -1,19 +1,31 @@
-import { benchmarkLabel } from "../constants/benchmarks.js";
 import { specUrl } from "../hooks/useSearch";
+import { useSuite } from "../hooks/useSuite.js";
 
-const COLUMNS = [
+const BASE_COLUMNS = [
   { key: "benchmark", label: "Benchmark" },
   { key: "vendor", label: "Vendor" },
   { key: "system", label: "System" },
   { key: "processor", label: "Processor" },
-  { key: "peakResult", label: "Peak", numeric: true },
-  { key: "baseResult", label: "Base", numeric: true },
+  { key: "peakResult", label: null, numeric: true },
+  { key: "baseResult", label: null, numeric: true },
   { key: "cores", label: "Cores", numeric: true },
   { key: "chips", label: "Chips", numeric: true },
   { key: "processorMhz", label: "MHz", numeric: true },
   { key: "hwAvail", label: "HW Avail" },
   { key: "published", label: "Published" },
 ];
+
+function buildColumns(suite) {
+  const cols = BASE_COLUMNS.map((col) => {
+    if (col.key === "peakResult") return { ...col, label: suite.peakLabel };
+    if (col.key === "baseResult") return { ...col, label: suite.baseLabel };
+    return col;
+  });
+  // Insert extra columns before hwAvail
+  const hwIdx = cols.findIndex((c) => c.key === "hwAvail");
+  cols.splice(hwIdx, 0, ...suite.extraColumns);
+  return cols;
+}
 
 export default function ResultsTable({
   data,
@@ -22,6 +34,8 @@ export default function ResultsTable({
   selected = [],
   onToggleSelection,
 }) {
+  const suite = useSuite();
+  const COLUMNS = buildColumns(suite);
   const selectedIds = new Set(selected.map((s) => s.id));
   const selectedBenchmark = selected.length > 0 ? selected[0].benchmark : null;
 
@@ -91,7 +105,9 @@ export default function ResultsTable({
                   <td key={col.key} className={col.numeric ? "num" : ""}>
                     {col.key === "benchmark" ? (
                       <span title={row[col.key]}>
-                        {benchmarkLabel(row[col.key] ?? "")}
+                        {suite.benchmarkLabels[row[col.key]] ??
+                          row[col.key] ??
+                          "—"}
                       </span>
                     ) : (
                       (row[col.key] ?? "—")
