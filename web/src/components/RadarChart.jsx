@@ -76,7 +76,7 @@ function polarToCart(angle, r) {
   return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) };
 }
 
-export default function RadarChart({ systems }) {
+export default function RadarChart({ systems, labelA, labelB }) {
   const suite = useSuite();
   const CHART_METRICS = buildMetrics(suite);
   const svgRef = useRef(null);
@@ -182,10 +182,10 @@ export default function RadarChart({ systems }) {
       </svg>
       <div className="radar-chart__legend">
         <span className="radar-chart__legend-a">
-          {a.processor ?? "System A"}
+          {labelA ?? a.processor ?? "System A"}
         </span>
         <span className="radar-chart__legend-b">
-          {b.processor ?? "System B"}
+          {labelB ?? b.processor ?? "System B"}
         </span>
       </div>
       <button

@@ -28,68 +28,74 @@ function buildFields(suite) {
     if (f.key === "baseResult") return { ...f, label: suite.baseScoreLabel };
     return f;
   });
-  // Insert extra fields before memory
   const memIdx = fields.findIndex((f) => f.key === "memory");
   fields.splice(memIdx, 0, ...suite.extraComparisonFields);
   return fields;
 }
 
 function formatValue(field, val, suite) {
-  if (val == null) return "—";
+  if (val == null) return "\u2014";
   if (field.key === "benchmark") return suite.benchmarkLabels[val] ?? val;
   return val;
 }
 
-function formatDelta(a, b) {
-  if (a == null || b == null) return null;
-  const diff = a - b;
-  const pct = b !== 0 ? ((diff / b) * 100).toFixed(1) : null;
+/** Compute delta as To-Be minus As-Is: positive = improvement. */
+function formatDelta(toBeVal, asIsVal) {
+  if (toBeVal == null || asIsVal == null) return null;
+  const diff = toBeVal - asIsVal;
+  const pct = asIsVal !== 0 ? ((diff / asIsVal) * 100).toFixed(1) : null;
   const sign = diff > 0 ? "+" : "";
   return { diff, sign, pct };
 }
 
 function DesktopGrid({ systems, fields, suite }) {
-  const [a, b] = systems;
+  const [asIs, toBe] = systems;
 
   return (
     <div className="comparison-grid">
       <div className="comparison-grid__col-header" />
       <div className="comparison-grid__col-header">
-        {a.processor ?? "System A"}
+        As-Is: {asIs.processor ?? "System A"}
       </div>
       <div className="comparison-grid__col-header">
-        {b.processor ?? "System B"}
+        To-Be: {toBe.processor ?? "System B"}
       </div>
+      <div className="comparison-grid__col-header">Change</div>
 
       {fields.map((field) => {
-        const valA = a[field.key];
-        const valB = b[field.key];
-        const delta = field.numeric ? formatDelta(valA, valB) : null;
+        const valAsIs = asIs[field.key];
+        const valToBe = toBe[field.key];
+        const delta = field.numeric ? formatDelta(valToBe, valAsIs) : null;
 
-        let classA = "comparison-grid__value";
-        let classB = "comparison-grid__value";
+        let classAsIs = "comparison-grid__value";
+        let classToBe = "comparison-grid__value";
+        let changeClass = "comparison-grid__change";
         if (delta && delta.diff > 0) {
-          classA += " comparison-grid__value--better";
-          classB += " comparison-grid__value--worse";
+          classToBe += " comparison-grid__value--better";
+          classAsIs += " comparison-grid__value--worse";
+          changeClass += " comparison-grid__change--positive";
         } else if (delta && delta.diff < 0) {
-          classA += " comparison-grid__value--worse";
-          classB += " comparison-grid__value--better";
+          classToBe += " comparison-grid__value--worse";
+          classAsIs += " comparison-grid__value--better";
+          changeClass += " comparison-grid__change--negative";
         }
 
         return (
           <div key={field.key} style={{ display: "contents" }}>
             <div className="comparison-grid__label">{field.label}</div>
-            <div className={classA}>
-              {formatValue(field, valA, suite)}
-              {delta && delta.diff !== 0 && (
-                <span className="comparison-grid__delta">
-                  ({delta.sign}
-                  {delta.diff}
-                  {delta.pct ? `, ${delta.sign}${delta.pct}%` : ""})
-                </span>
-              )}
+            <div className={classAsIs}>
+              {formatValue(field, valAsIs, suite)}
             </div>
-            <div className={classB}>{formatValue(field, valB, suite)}</div>
+            <div className={classToBe}>
+              {formatValue(field, valToBe, suite)}
+            </div>
+            <div className={changeClass}>
+              {delta && delta.diff !== 0
+                ? `${delta.sign}${delta.diff}${delta.pct ? ` (${delta.sign}${delta.pct}%)` : ""}`
+                : field.numeric
+                  ? "\u2014"
+                  : "\u2014"}
+            </div>
           </div>
         );
       })}
@@ -98,8 +104,8 @@ function DesktopGrid({ systems, fields, suite }) {
 }
 
 function MobileComparison({ systems, fields, suite }) {
-  const [a, b] = systems;
-
+  const [asIs, toBe] = systems;
+  const roles = ["As-Is", "To-Be"];
   const numericFields = fields.filter((f) => f.numeric);
 
   return (
@@ -107,7 +113,7 @@ function MobileComparison({ systems, fields, suite }) {
       {systems.map((sys, i) => (
         <div key={sys.id} className="comparison-mobile-card">
           <h3>
-            System {i + 1}: {sys.processor ?? "Unknown"}
+            {roles[i]}: {sys.processor ?? "Unknown"}
           </h3>
           {fields.map((field) => (
             <div key={field.key} className="comparison-mobile-row">
@@ -121,9 +127,9 @@ function MobileComparison({ systems, fields, suite }) {
       ))}
 
       <div className="comparison-delta-section">
-        <h3>Differences</h3>
+        <h3>Changes (To-Be vs As-Is)</h3>
         {numericFields.map((field) => {
-          const delta = formatDelta(a[field.key], b[field.key]);
+          const delta = formatDelta(toBe[field.key], asIs[field.key]);
           if (!delta || delta.diff === 0) return null;
           return (
             <div key={field.key} className="comparison-mobile-row">
@@ -150,20 +156,20 @@ function MobileComparison({ systems, fields, suite }) {
 }
 
 function exportToCsv(systems, fields, suite) {
-  const [a, b] = systems;
+  const [asIs, toBe] = systems;
   const header = [
     "Field",
-    a.processor ?? "System A",
-    b.processor ?? "System B",
+    `As-Is: ${asIs.processor ?? "System A"}`,
+    `To-Be: ${toBe.processor ?? "System B"}`,
   ];
   const rows = fields.map((f) => [
     f.label,
     f.key === "benchmark"
-      ? (suite.benchmarkLabels[a[f.key]] ?? a[f.key] ?? "")
-      : (a[f.key] ?? ""),
+      ? (suite.benchmarkLabels[asIs[f.key]] ?? asIs[f.key] ?? "")
+      : (asIs[f.key] ?? ""),
     f.key === "benchmark"
-      ? (suite.benchmarkLabels[b[f.key]] ?? b[f.key] ?? "")
-      : (b[f.key] ?? ""),
+      ? (suite.benchmarkLabels[toBe[f.key]] ?? toBe[f.key] ?? "")
+      : (toBe[f.key] ?? ""),
   ]);
   const csv = [header, ...rows]
     .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
@@ -172,7 +178,7 @@ function exportToCsv(systems, fields, suite) {
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download =
-    `comparison-${a.processor ?? "A"}-vs-${b.processor ?? "B"}.csv`.replace(
+    `comparison-${asIs.processor ?? "A"}-vs-${toBe.processor ?? "B"}.csv`.replace(
       /\s+/g,
       "_",
     );
@@ -224,28 +230,27 @@ function exportBothCharts(containerEl, filename) {
   });
 }
 
-export default function ComparisonView({ systems, onClose }) {
+export default function ComparisonView({ systems, onClose, onSwap }) {
   const suite = useSuite();
   const fields = buildFields(suite);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [copied, setCopied] = useState(false);
   const chartsRef = useRef(null);
 
+  const [asIs, toBe] = systems;
+  const asIsLabel = `As-Is: ${asIs.processor ?? "System A"}`;
+  const toBeLabel = `To-Be: ${toBe.processor ?? "System B"}`;
+
   function copyTsv() {
-    const [a, b] = systems;
-    const header = [
-      "Field",
-      a.processor ?? "System A",
-      b.processor ?? "System B",
-    ];
+    const header = ["Field", asIsLabel, toBeLabel];
     const rows = fields.map((f) => [
       f.label,
       f.key === "benchmark"
-        ? (suite.benchmarkLabels[a[f.key]] ?? a[f.key] ?? "")
-        : (a[f.key] ?? ""),
+        ? (suite.benchmarkLabels[asIs[f.key]] ?? asIs[f.key] ?? "")
+        : (asIs[f.key] ?? ""),
       f.key === "benchmark"
-        ? (suite.benchmarkLabels[b[f.key]] ?? b[f.key] ?? "")
-        : (b[f.key] ?? ""),
+        ? (suite.benchmarkLabels[toBe[f.key]] ?? toBe[f.key] ?? "")
+        : (toBe[f.key] ?? ""),
     ]);
     const tsv = [header, ...rows].map((r) => r.join("\t")).join("\n");
     navigator.clipboard.writeText(tsv).then(() => {
@@ -259,6 +264,14 @@ export default function ComparisonView({ systems, onClose }) {
       <div className="comparison-view__header">
         <h2>System Comparison</h2>
         <div className="comparison-view__actions">
+          <button
+            type="button"
+            className="comparison-view__swap"
+            onClick={onSwap}
+            title="Swap As-Is and To-Be"
+          >
+            {"\u21C4"} Swap
+          </button>
           <button type="button" className="btn-export" onClick={copyTsv}>
             {copied ? "Copied!" : "Copy TSV"}
           </button>
@@ -275,7 +288,7 @@ export default function ComparisonView({ systems, onClose }) {
             onClick={() =>
               exportBothCharts(
                 chartsRef.current,
-                `charts-${systems[0].processor ?? "A"}-vs-${systems[1].processor ?? "B"}.png`.replace(
+                `charts-${asIs.processor ?? "A"}-vs-${toBe.processor ?? "B"}.png`.replace(
                   /\s+/g,
                   "_",
                 ),
@@ -289,8 +302,8 @@ export default function ComparisonView({ systems, onClose }) {
             className="btn-export"
             onClick={() =>
               exportToPptx({
-                systemA: systems[0],
-                systemB: systems[1],
+                systemA: asIs,
+                systemB: toBe,
                 chartsContainerEl: chartsRef.current,
                 prepareRadarSvg,
                 prepareBarSvg,
@@ -311,8 +324,8 @@ export default function ComparisonView({ systems, onClose }) {
       </div>
 
       <div className="comparison-charts" ref={chartsRef}>
-        <RadarChart systems={systems} />
-        <BarChart systems={systems} />
+        <RadarChart systems={systems} labelA={asIsLabel} labelB={toBeLabel} />
+        <BarChart systems={systems} labelA={asIsLabel} labelB={toBeLabel} />
       </div>
 
       {isDesktop ? (

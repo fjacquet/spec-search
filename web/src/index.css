@@ -577,14 +577,15 @@ body {
 
 .comparison-grid {
   display: grid;
-  grid-template-columns: 140px 1fr 1fr;
+  grid-template-columns: 140px 1fr 1fr 120px;
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
 }
 
 .comparison-grid__label,
-.comparison-grid__value {
+.comparison-grid__value,
+.comparison-grid__change {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--border);
   font-size: 0.85rem;
@@ -605,9 +606,20 @@ body {
   color: #dc3545;
 }
 
-.comparison-grid__delta {
-  font-size: 0.75rem;
-  margin-left: 0.5rem;
+.comparison-grid__change {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.comparison-grid__change--positive {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.comparison-grid__change--negative {
+  color: #dc3545;
+  font-weight: 600;
 }
 
 .comparison-grid__col-header {
@@ -616,6 +628,21 @@ body {
   font-weight: 700;
   border-bottom: 2px solid var(--border);
   font-size: 0.9rem;
+}
+
+.comparison-view__swap {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.comparison-view__swap:hover {
+  background: var(--accent);
+  color: white;
 }
 
 /* ── Comparison Charts ── */

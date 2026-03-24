@@ -162,6 +162,14 @@ export default function App() {
     syncUrl(suiteId, filters);
   };
 
+  const swapSystems = () => {
+    setSelected((prev) => {
+      const swapped = [prev[1], prev[0]];
+      syncUrl(suiteId, filters, `${swapped[0].id},${swapped[1].id}`);
+      return swapped;
+    });
+  };
+
   const { total, pageData, totalPages } = useSearch(
     data,
     filters,
@@ -178,7 +186,11 @@ export default function App() {
     return (
       <SuiteContext.Provider value={suite}>
         <div className="app">
-          <ComparisonView systems={selected} onClose={closeComparison} />
+          <ComparisonView
+            systems={selected}
+            onClose={closeComparison}
+            onSwap={swapSystems}
+          />
         </div>
       </SuiteContext.Provider>
     );

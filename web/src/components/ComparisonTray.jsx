@@ -5,9 +5,11 @@ export default function ComparisonTray({ selected, onCompare, onClear }) {
       aria-label="Selected systems for comparison"
     >
       <div className="comparison-tray__systems">
-        {selected.map((s) => (
+        {selected.map((s, i) => (
           <span key={s.id} className="comparison-tray__chip">
-            {s.processor ?? "Unknown"}
+            {selected.length === 2
+              ? `${i === 0 ? "As-Is" : "To-Be"}: ${s.processor ?? "Unknown"}`
+              : (s.processor ?? "Unknown")}
           </span>
         ))}
       </div>

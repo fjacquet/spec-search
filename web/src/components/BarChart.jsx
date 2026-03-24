@@ -66,7 +66,7 @@ const GAP = 8;
 const LABEL_WIDTH = 90;
 const MAX_BAR = 200;
 
-export default function BarChart({ systems }) {
+export default function BarChart({ systems, labelA, labelB }) {
   const suite = useSuite();
   const BAR_METRICS = buildMetrics(suite);
   const svgRef = useRef(null);
@@ -148,8 +148,12 @@ export default function BarChart({ systems }) {
         })}
       </svg>
       <div className="bar-chart__legend">
-        <span className="bar-chart__legend-a">{a.processor ?? "System A"}</span>
-        <span className="bar-chart__legend-b">{b.processor ?? "System B"}</span>
+        <span className="bar-chart__legend-a">
+          {labelA ?? a.processor ?? "System A"}
+        </span>
+        <span className="bar-chart__legend-b">
+          {labelB ?? b.processor ?? "System B"}
+        </span>
       </div>
       <button
         type="button"

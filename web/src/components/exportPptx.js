@@ -35,11 +35,12 @@ const COLOR_GRAY = "6C757D";
 const COLOR_HEADER_BG = "F0F0F0";
 const COLOR_ALT_ROW = "FAFAFA";
 
-function formatDelta(a, b) {
-  if (a == null || b == null) return "—";
-  const diff = a - b;
+/** Delta = To-Be minus As-Is: positive = improvement. */
+function formatDelta(toBeVal, asIsVal) {
+  if (toBeVal == null || asIsVal == null) return "\u2014";
+  const diff = toBeVal - asIsVal;
   if (diff === 0) return "0%";
-  const pct = b !== 0 ? ((diff / b) * 100).toFixed(1) : "∞";
+  const pct = asIsVal !== 0 ? ((diff / asIsVal) * 100).toFixed(1) : "\u221E";
   const sign = diff > 0 ? "+" : "";
   return `${sign}${pct}%`;
 }
@@ -50,21 +51,24 @@ function formatCellValue(field, val, suite) {
   return String(val);
 }
 
-function deltaColor(a, b) {
-  if (a == null || b == null || a === b) return COLOR_GRAY;
-  return a > b ? COLOR_GREEN : COLOR_RED;
+/** Color based on To-Be vs As-Is: green = improvement, red = regression. */
+function deltaColor(toBeVal, asIsVal) {
+  if (toBeVal == null || asIsVal == null || toBeVal === asIsVal)
+    return COLOR_GRAY;
+  return toBeVal > asIsVal ? COLOR_GREEN : COLOR_RED;
 }
 
+/** systemA = As-Is, systemB = To-Be. Delta = To-Be minus As-Is. */
 export function buildSlideData(systemA, systemB, suite) {
   if (!suite) suite = getSuite("cpu2017");
   const fields = buildFields(suite);
   const nameA = systemA.processor ?? "System A";
   const nameB = systemB.processor ?? "System B";
 
-  const title = `${nameA}  vs  ${nameB}`;
+  const title = `${nameA} (As-Is)  vs  ${nameB} (To-Be)`;
   const bm = systemA.benchmark ?? systemB.benchmark ?? "";
   const bmLabel = suite.benchmarkLabels[bm] ?? bm;
-  const subtitle = `${suite.name} — ${bmLabel} — ${new Date().toLocaleDateString()}`;
+  const subtitle = `${suite.name} \u2014 ${bmLabel} \u2014 ${new Date().toLocaleDateString()}`;
   const filename = `comparison-${nameA}-vs-${nameB}.pptx`.replace(/\s+/g, "_");
 
   const headerRow = [
@@ -78,7 +82,7 @@ export function buildSlideData(systemA, systemB, suite) {
       },
     },
     {
-      text: nameA,
+      text: `As-Is: ${nameA}`,
       options: {
         bold: true,
         fill: COLOR_HEADER_BG,
@@ -87,7 +91,7 @@ export function buildSlideData(systemA, systemB, suite) {
       },
     },
     {
-      text: nameB,
+      text: `To-Be: ${nameB}`,
       options: {
         bold: true,
         fill: COLOR_HEADER_BG,
@@ -96,7 +100,7 @@ export function buildSlideData(systemA, systemB, suite) {
       },
     },
     {
-      text: "Delta",
+      text: "Change",
       options: {
         bold: true,
         fill: COLOR_HEADER_BG,
@@ -107,22 +111,24 @@ export function buildSlideData(systemA, systemB, suite) {
   ];
 
   const dataRows = fields.map((field, i) => {
-    const valA = systemA[field.key];
-    const valB = systemB[field.key];
+    const valAsIs = systemA[field.key];
+    const valToBe = systemB[field.key];
     const isAlt = i % 2 === 1;
     const rowFill = isAlt ? COLOR_ALT_ROW : "FFFFFF";
 
-    const deltaText = field.numeric ? formatDelta(valA, valB) : "—";
-    const deltaCellColor = field.numeric ? deltaColor(valA, valB) : COLOR_GRAY;
+    const deltaText = field.numeric ? formatDelta(valToBe, valAsIs) : "\u2014";
+    const deltaCellColor = field.numeric
+      ? deltaColor(valToBe, valAsIs)
+      : COLOR_GRAY;
 
     return [
       { text: field.label, options: { fill: rowFill, align: "left" } },
       {
-        text: formatCellValue(field, valA, suite),
+        text: formatCellValue(field, valAsIs, suite),
         options: { fill: rowFill, align: "center" },
       },
       {
-        text: formatCellValue(field, valB, suite),
+        text: formatCellValue(field, valToBe, suite),
         options: { fill: rowFill, align: "center" },
       },
       {
@@ -265,10 +271,16 @@ export async function exportToPptx({
   const nameB = systemB.processor ?? "System B";
   slide.addText(
     [
-      { text: "■ ", options: { color: COLOR_BLUE, fontSize: 10 } },
-      { text: `${nameA}     `, options: { color: COLOR_GRAY, fontSize: 9 } },
-      { text: "■ ", options: { color: COLOR_RED, fontSize: 10 } },
-      { text: nameB, options: { color: COLOR_GRAY, fontSize: 9 } },
+      { text: "\u25A0 ", options: { color: COLOR_BLUE, fontSize: 10 } },
+      {
+        text: `As-Is: ${nameA}     `,
+        options: { color: COLOR_GRAY, fontSize: 9 },
+      },
+      { text: "\u25A0 ", options: { color: COLOR_RED, fontSize: 10 } },
+      {
+        text: `To-Be: ${nameB}`,
+        options: { color: COLOR_GRAY, fontSize: 9 },
+      },
     ],
     {
       x: 0.5,

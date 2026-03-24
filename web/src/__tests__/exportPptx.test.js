@@ -29,6 +29,7 @@ const { getSuite } = await import("../constants/suites.js");
 const CPU2017_SUITE = getSuite("cpu2017");
 const JBB2015_SUITE = getSuite("jbb2015");
 
+// SYSTEM_A = As-Is (current), SYSTEM_B = To-Be (target)
 const SYSTEM_A = {
   processor: "AMD EPYC 9754",
   vendor: "Supermicro",
@@ -70,29 +71,31 @@ describe("buildSlideData (CPU2017)", () => {
     expect(tableRows).toHaveLength(15);
   });
 
-  it("header row has 4 columns: Metric, System A, System B, Delta", () => {
+  it("header row has As-Is/To-Be labels and Change column", () => {
     const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     const header = tableRows[0];
     expect(header).toHaveLength(4);
     expect(header[0].text).toBe("Metric");
-    expect(header[1].text).toBe("AMD EPYC 9754");
-    expect(header[2].text).toBe("Intel Xeon w9-3595X");
-    expect(header[3].text).toBe("Delta");
+    expect(header[1].text).toBe("As-Is: AMD EPYC 9754");
+    expect(header[2].text).toBe("To-Be: Intel Xeon w9-3595X");
+    expect(header[3].text).toBe("Change");
   });
 
-  it("computes positive delta for peakResult (A > B)", () => {
+  it("computes negative delta for peakResult (To-Be < As-Is = regression)", () => {
     const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     const peakRow = tableRows.find(
       (row) => row[0] && row[0].text === "Peak Score",
     );
-    expect(peakRow[3].text).toMatch(/^\+/);
+    // To-Be (920) < As-Is (1280) → negative delta
+    expect(peakRow[3].text).toMatch(/^-/);
     expect(peakRow[3].text).toContain("%");
   });
 
-  it("computes negative delta when B > A", () => {
+  it("computes positive delta when To-Be > As-Is (improvement)", () => {
     const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
     const mhzRow = tableRows.find((row) => row[0] && row[0].text === "MHz");
-    expect(mhzRow[3].text).toMatch(/^-/);
+    // To-Be MHz (3900) > As-Is MHz (2250) → positive delta
+    expect(mhzRow[3].text).toMatch(/^\+/);
   });
 
   it("shows dash for string fields delta", () => {
@@ -100,7 +103,7 @@ describe("buildSlideData (CPU2017)", () => {
     const processorRow = tableRows.find(
       (row) => row[0] && row[0].text === "Processor",
     );
-    expect(processorRow[3].text).toBe("—");
+    expect(processorRow[3].text).toBe("\u2014");
   });
 
   it("shows 0% for equal numeric values", () => {
@@ -109,10 +112,10 @@ describe("buildSlideData (CPU2017)", () => {
     expect(chipsRow[3].text).toBe("0%");
   });
 
-  it("returns title with both processor names", () => {
+  it("returns title with As-Is/To-Be designations", () => {
     const { title } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
-    expect(title).toContain("AMD EPYC 9754");
-    expect(title).toContain("Intel Xeon w9-3595X");
+    expect(title).toContain("AMD EPYC 9754 (As-Is)");
+    expect(title).toContain("Intel Xeon w9-3595X (To-Be)");
   });
 
   it("returns subtitle with benchmark label and suite name", () => {
