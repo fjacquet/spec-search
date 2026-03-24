@@ -176,7 +176,7 @@ class TestProcessRowJbb2015:
             "Test Date": "",
             "Published": "Jun-2023",
             "Disclosure": (
-                'http://www.spec.org/jbb2015/results/res2023q2/'
+                "http://www.spec.org/jbb2015/results/res2023q2/"
                 'jbb2015-20230517-01040.html"<A HREF=""'
                 '/jbb2015/results/res2023q2/jbb2015-20230517-01040.html"">HTML</A>"'
             ),
@@ -225,25 +225,25 @@ class TestPipelineIntegration:
         (datas_dir / "cpu2017-results.csv").write_text(cpu_content, encoding="utf-8-sig")
 
         jbb_content = (
-            "Benchmark,Company,System,\"Max-jOPS\t\",\"Critical-jOPS\t\",JVM,\"JVM Vendor  \","
-            "\"# of nodes\",\"# cores\",\"# chips\",\"# cores per chip\","
-            "\"# of threads per core \",\"Total # of threads \",Processor,"
-            "\"CPU Speed\",\"CPU Characteristics \",\"Primary Cache\","
-            "\"Secondary Cache\",\"Tertiary Cache\",\"Memory (GB)\","
-            "\"DIMMS \",\"Memory Details\",\"Disk \t\",\"File System \t\","
-            "\"Operating System\",\"OS Vendor\",\"NICs\t\",\"PSU\t\","
-            "\"Form factor\t\",\"Enclosure\t\",\"Hardware Availability\","
-            "\"OS Availability\",\"JVM Availability\",\"SW Availability\","
-            "License,\"Tested By\",\"Test Sponsor\",\"Test Date\",Published,"
-            "\"Updated \",Disclosure,\"Disclosure URL\",Disclosures\r\n"
-            "JBB2015MULTI,\"TestCo\",TestSys,100000,90000,\"TestJVM\",Oracle,1,64,1,64,2,128,"
-            "\"AMD EPYC 9654\",2400,\"64 Core\",\"32 KB\",\"1 MB\",\"256 MB\",512,"
-            "\"8 x 64 GB\",\"64 GB\",\"1 x SSD\",xfs,\"SUSE Linux\",SUSE,"
-            "\"1 x NIC\",\"2 x 1600W\",2U,None,Jun-2023,Jun-2022,Apr-2023,Apr-2023,"
+            'Benchmark,Company,System,"Max-jOPS\t","Critical-jOPS\t",JVM,"JVM Vendor  ",'
+            '"# of nodes","# cores","# chips","# cores per chip",'
+            '"# of threads per core ","Total # of threads ",Processor,'
+            '"CPU Speed","CPU Characteristics ","Primary Cache",'
+            '"Secondary Cache","Tertiary Cache","Memory (GB)",'
+            '"DIMMS ","Memory Details","Disk \t","File System \t",'
+            '"Operating System","OS Vendor","NICs\t","PSU\t",'
+            '"Form factor\t","Enclosure\t","Hardware Availability",'
+            '"OS Availability","JVM Availability","SW Availability",'
+            'License,"Tested By","Test Sponsor","Test Date",Published,'
+            '"Updated ",Disclosure,"Disclosure URL",Disclosures\r\n'
+            'JBB2015MULTI,"TestCo",TestSys,100000,90000,"TestJVM",Oracle,1,64,1,64,2,128,'
+            '"AMD EPYC 9654",2400,"64 Core","32 KB","1 MB","256 MB",512,'
+            '"8 x 64 GB","64 GB","1 x SSD",xfs,"SUSE Linux",SUSE,'
+            '"1 x NIC","2 x 1600W",2U,None,Jun-2023,Jun-2022,Apr-2023,Apr-2023,'
             "9016,TestCo,TestCo,,Jun-2023,,"
-            "\"http://www.spec.org/jbb2015/results/res2023q2/"
-            "jbb2015-20230517-01040.html\"\"<A HREF=\"\"/jbb2015/results/"
-            "res2023q2/jbb2015-20230517-01040.html\"\">HTML</A>\"\",,"
+            '"http://www.spec.org/jbb2015/results/res2023q2/'
+            'jbb2015-20230517-01040.html""<A HREF=""/jbb2015/results/'
+            'res2023q2/jbb2015-20230517-01040.html"">HTML</A>"",,'
             "\r\n"
         )
         (datas_dir / "jbb2015-results.csv").write_text(jbb_content, encoding="utf-8-sig")
