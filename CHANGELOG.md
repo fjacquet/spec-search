@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2026-04-17
+
+### Security
+
+- Cleared web-side npm audit advisories (Vite path traversal GHSA-4w7w-66w2-5vf9,
+  Vite dev-server WebSocket read GHSA-p9ff-h696-f583, picomatch ReDoS
+  GHSA-c2c7-rcm5-vvqj) via `npm audit fix`. 42 web tests still pass.
+
+### Changed
+
+- Bumped CI/Release workflows from Node 22 to Node 24 to drop the Node 20
+  deprecation warnings on pinned JavaScript actions.
+
 ## [1.7.1] - 2026-04-17
 
 ### Security
