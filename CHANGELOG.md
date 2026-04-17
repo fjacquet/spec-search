@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.1] - 2026-04-17
+
+### Security
+
+- Upgraded dev dependencies to clear new pip-audit advisories blocking CI
+  (pygments 2.19.2→2.20.0 / CVE-2026-4539, pytest 9.0.2→9.0.3 / CVE-2025-71176,
+  requests 2.32.5→2.33.1 / CVE-2026-25645). No runtime impact on the MCP wheel.
+
 ## [1.7.0] - 2026-04-17
 
 ### Changed
