@@ -1,3 +1,41 @@
+@import "tailwindcss";
+
+/* Class-strategy dark variant: `dark:bg-X` activates under an ancestor
+ * with class="dark". public/theme-init.js sets it before paint. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* spec-search — Midnight Executive palette (ported verbatim from vatlas;
+ * single source of truth, matches web/src/theme/tokens.js + the PPTX export). */
+@theme {
+  --color-primary-50: oklch(96% 0.02 270);
+  --color-primary-100: oklch(91% 0.04 270);
+  --color-primary-200: oklch(82% 0.08 270);
+  --color-primary-300: oklch(70% 0.12 270);
+  --color-primary-400: oklch(58% 0.16 270);
+  --color-primary-500: oklch(45% 0.18 270);
+  --color-primary-600: oklch(36% 0.16 270);
+  --color-primary-700: oklch(28% 0.14 270);
+  --color-primary-800: oklch(22% 0.12 270);
+  --color-primary-900: oklch(18% 0.08 270);
+  --color-primary-950: oklch(12% 0.05 270);
+
+  --color-ice: oklch(88% 0.04 240);
+  --color-accent-500: oklch(78% 0.16 75);
+
+  --color-util-low: oklch(64% 0.16 142);
+  --color-util-mid: oklch(72% 0.18 65);
+  --color-util-high: oklch(58% 0.22 25);
+
+  --color-surface-50: oklch(98% 0.005 260);
+  --color-surface-100: oklch(95% 0.008 260);
+  --color-surface-200: oklch(88% 0.01 260);
+  --color-surface-700: oklch(28% 0.02 260);
+  --color-surface-800: oklch(20% 0.02 260);
+  --color-surface-900: oklch(15% 0.02 260);
+
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+}
+
 :root {
   --bg: #ffffff;
   --bg-secondary: #f8f9fa;
