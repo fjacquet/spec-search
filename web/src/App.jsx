@@ -180,13 +180,17 @@ export default function App() {
   );
 
   if (!data || !facets) {
-    return <div className="loading">Loading benchmark data...</div>;
+    return (
+      <div className="flex h-[200px] items-center justify-center text-lg text-slate-500 dark:text-slate-400">
+        Loading benchmark data...
+      </div>
+    );
   }
 
   if (showComparison && selected.length === 2) {
     return (
       <SuiteContext.Provider value={suite}>
-        <div className="app">
+        <div className="mx-auto max-w-[1400px] p-2 min-[480px]:p-3 md:p-4">
           <ComparisonView
             systems={selected}
             onClose={closeComparison}
@@ -199,20 +203,24 @@ export default function App() {
 
   return (
     <SuiteContext.Provider value={suite}>
-      <div className={`app${selected.length > 0 ? " app--with-tray" : ""}`}>
-        <header className="app-header">
+      <div
+        className={`mx-auto max-w-[1400px] p-2 min-[480px]:p-3 md:p-4${selected.length > 0 ? " pb-[140px] md:pb-20" : ""}`}
+      >
+        <header className="mb-4 flex items-baseline gap-4 border-b-2 border-slate-200 pb-4 dark:border-surface-700 max-[479px]:mb-4 max-[479px]:flex-col max-[479px]:gap-1 max-[479px]:pb-3">
           <img
             src={`${import.meta.env.BASE_URL}logo.svg`}
             alt="SPEC Search"
-            className="app-logo"
+            className="h-10 w-10 shrink-0 max-[479px]:h-8 max-[479px]:w-8"
           />
-          <h1>{suite.name} Results</h1>
-          <div className="suite-selector">
+          <h1 className="text-2xl font-bold max-[479px]:text-xl">
+            {suite.name} Results
+          </h1>
+          <div className="ml-auto flex gap-1">
             {SUITE_IDS.map((id) => (
               <button
                 key={id}
                 type="button"
-                className={`suite-btn${id === suiteId ? " suite-btn--active" : ""}`}
+                className={`cursor-pointer rounded border border-slate-200 bg-transparent px-3 py-1 text-xs text-slate-500 transition-colors hover:border-primary-500 hover:text-primary-500 dark:border-surface-700 dark:text-slate-400 dark:hover:border-primary-300 dark:hover:text-primary-300${id === suiteId ? " border-primary-500 bg-primary-500 text-white hover:text-white dark:bg-primary-300 dark:text-surface-900" : ""}`}
                 onClick={() => handleSuiteChange(id)}
               >
                 {getSuite(id).name}
@@ -220,7 +228,7 @@ export default function App() {
             ))}
           </div>
           <ThemeToggle />
-          <span className="subtitle">
+          <span className="text-sm text-slate-500 dark:text-slate-400">
             {data.length.toLocaleString()} benchmark entries
           </span>
         </header>
@@ -233,7 +241,7 @@ export default function App() {
           collapsible={!isDesktop}
         />
 
-        <div className="status-bar">
+        <div className="mb-3 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 max-[479px]:flex-col max-[479px]:items-start max-[479px]:gap-1">
           <span>
             Showing {pageData.length} of {total.toLocaleString()} results
           </span>
