@@ -113,72 +113,6 @@ body {
   line-height: 1.5;
 }
 
-/* Filter Bar */
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.filter-group label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-
-.filter-group select,
-.filter-group input {
-  padding: 0.4rem 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-size: 0.875rem;
-  background: var(--bg);
-}
-
-.filter-group input[type="number"] {
-  width: 90px;
-}
-
-.filter-group input[type="text"] {
-  width: 200px;
-}
-
-.filter-range {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.filter-actions {
-  display: flex;
-  align-items: flex-end;
-}
-
-.btn-clear {
-  padding: 0.4rem 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--bg);
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.btn-clear:hover {
-  background: var(--border);
-}
-
 /* Results Table */
 .table-container {
   overflow-x: auto;
@@ -273,57 +207,6 @@ body {
   font-size: 0.875rem;
 }
 
-/* ── Collapsible Filter Bar ── */
-.filter-toggle {
-  display: none;
-}
-
-.filter-bar--collapsible .filter-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  min-height: 44px;
-  padding: 0.5rem 0.75rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.filter-toggle .chevron {
-  transition: transform 0.2s;
-}
-
-.filter-bar--collapsed .chevron {
-  transform: rotate(-90deg);
-}
-
-.filter-bar--collapsible .filter-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow: hidden;
-  max-height: 600px;
-  transition: max-height 0.3s ease, opacity 0.2s ease;
-  opacity: 1;
-}
-
-.filter-bar--collapsed .filter-content {
-  max-height: 0;
-  opacity: 0;
-}
-
-.filter-badge {
-  background: var(--accent);
-  color: white;
-  font-size: 0.7rem;
-  padding: 0.1rem 0.4rem;
-  border-radius: 10px;
-  margin-left: 0.5rem;
-}
 
 /* ── Result Cards (mobile) ── */
 .results-list {
@@ -838,50 +721,6 @@ body {
     flex-direction: column;
     gap: 0.25rem;
     align-items: center;
-  }
-
-  .filter-bar {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.75rem;
-  }
-
-  .filter-group {
-    width: 100%;
-  }
-
-  .filter-group select,
-  .filter-group input {
-    width: 100%;
-    min-height: 44px;
-    font-size: 1rem;
-  }
-
-  .filter-group input[type="number"] {
-    width: auto;
-  }
-
-  .filter-group input[type="text"] {
-    width: 100%;
-  }
-
-  .filter-range {
-    gap: 0.5rem;
-  }
-
-  .filter-range input {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .filter-actions {
-    width: 100%;
-  }
-
-  .btn-clear {
-    width: 100%;
-    min-height: 44px;
-    font-size: 1rem;
   }
 
   .pagination {
