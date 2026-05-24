@@ -1,12 +1,18 @@
 import { useRef } from "react";
 import { useSuite } from "../hooks/useSuite.js";
+import { chartSeries, FONT_MONO } from "../theme/tokens.js";
 
-const BAR_CSS = `
-  .bar-chart__label { font-size: 11px; fill: #6c757d; font-family: sans-serif; }
-  .bar-chart__bar-a { fill: #0d6efd; opacity: 0.85; }
-  .bar-chart__bar-b { fill: #dc3545; opacity: 0.75; }
-  .bar-chart__value { font-size: 10px; fill: #6c757d; font-family: sans-serif; }
+/** CSS injected into the serialized SVG (export needs concrete hex, not
+ * Tailwind utilities). `theme` defaults to light so exports stay on white. */
+export function barCss(theme = "light") {
+  const s = chartSeries[theme] ?? chartSeries.light;
+  return `
+  .bar-chart__label { font-size: 11px; fill: ${s.label}; font-family: ${FONT_MONO}; }
+  .bar-chart__bar-a { fill: ${s.asIs}; opacity: 0.85; }
+  .bar-chart__bar-b { fill: ${s.toBe}; opacity: 0.85; }
+  .bar-chart__value { font-size: 10px; fill: ${s.label}; font-family: ${FONT_MONO}; }
 `;
+}
 
 export function prepareBarSvg(svgEl) {
   const w = svgEl.viewBox.baseVal.width || svgEl.clientWidth;
@@ -15,7 +21,7 @@ export function prepareBarSvg(svgEl) {
   clone.setAttribute("width", w);
   clone.setAttribute("height", h);
   const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
-  style.textContent = BAR_CSS;
+  style.textContent = barCss();
   clone.insertBefore(style, clone.firstChild);
   return { clone, w, h };
 }

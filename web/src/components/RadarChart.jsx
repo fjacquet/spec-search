@@ -1,15 +1,23 @@
 import { useRef } from "react";
 import { useSuite } from "../hooks/useSuite.js";
+import { chartSeries, FONT_MONO } from "../theme/tokens.js";
 
-const RADAR_CSS = `
-  .radar-chart__ring { fill: none; stroke: #dee2e6; stroke-width: 0.5; }
-  .radar-chart__axis { stroke: #dee2e6; stroke-width: 0.5; }
-  .radar-chart__area-a { fill: rgba(13,110,253,0.2); stroke: #0d6efd; stroke-width: 2; }
-  .radar-chart__area-b { fill: rgba(220,53,69,0.15); stroke: #dc3545; stroke-width: 2; }
-  .radar-chart__dot-a { fill: #0d6efd; }
-  .radar-chart__dot-b { fill: #dc3545; }
-  .radar-chart__label { font-size: 11px; fill: #6c757d; font-family: sans-serif; }
+export function radarCss(theme = "light") {
+  const s = chartSeries[theme] ?? chartSeries.light;
+  const rgba = (hex, a) => {
+    const n = Number.parseInt(hex.slice(1), 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  };
+  return `
+  .radar-chart__ring { fill: none; stroke: ${s.grid}; stroke-width: 0.5; }
+  .radar-chart__axis { stroke: ${s.grid}; stroke-width: 0.5; }
+  .radar-chart__area-a { fill: ${rgba(s.asIs, 0.2)}; stroke: ${s.asIs}; stroke-width: 2; }
+  .radar-chart__area-b { fill: ${rgba(s.toBe, 0.2)}; stroke: ${s.toBe}; stroke-width: 2; }
+  .radar-chart__dot-a { fill: ${s.asIs}; }
+  .radar-chart__dot-b { fill: ${s.toBe}; }
+  .radar-chart__label { font-size: 11px; fill: ${s.label}; font-family: ${FONT_MONO}; }
 `;
+}
 
 export function prepareRadarSvg(svgEl) {
   const w = svgEl.viewBox.baseVal.width || svgEl.clientWidth;
@@ -18,7 +26,7 @@ export function prepareRadarSvg(svgEl) {
   clone.setAttribute("width", w);
   clone.setAttribute("height", h);
   const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
-  style.textContent = RADAR_CSS;
+  style.textContent = radarCss();
   clone.insertBefore(style, clone.firstChild);
   return { clone, w, h };
 }
