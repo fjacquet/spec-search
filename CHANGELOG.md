@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.1] - 2026-05-24
+
+### Changed
+
+- Bumped the npm `all-npm` group (#19): React / React-DOM 19.2.5 → 19.2.6,
+  Vite 8.0.10 → 8.0.14, Vitest and `@vitest/coverage-v8` 4.1.5 → 4.1.7,
+  `@biomejs/biome` 2.4.13 → 2.4.15, `@vitejs/plugin-react` 6.0.1 → 6.0.2,
+  `@types/react` 19.2.14 → 19.2.15.
+
 ## [1.9.0] - 2026-05-24
 
 ### Added
