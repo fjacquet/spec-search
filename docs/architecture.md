@@ -58,6 +58,8 @@ A client-side React 19 app built with Vite 6:
 - Renders 50 rows per page with pagination
 - Deployed as static files on GitHub Pages at `/spec-search/`
 
+Web theming = Tailwind v4 `@theme` tokens (Midnight Executive), single source of truth mirrored to `web/src/theme/tokens.js` for charts + PPTX; see ADR-006.
+
 ## Deployment
 
 GitHub Actions CI workflow:
