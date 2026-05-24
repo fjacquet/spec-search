@@ -206,7 +206,7 @@ export default function App() {
       <div
         className={`mx-auto max-w-[1400px] p-2 min-[480px]:p-3 md:p-4${selected.length > 0 ? " pb-[140px] md:pb-20" : ""}`}
       >
-        <header className="mb-4 flex items-baseline gap-4 border-b-2 border-slate-200 pb-4 dark:border-surface-700 max-[479px]:mb-4 max-[479px]:flex-col max-[479px]:gap-1 max-[479px]:pb-3">
+        <header className="mb-6 flex items-baseline gap-4 border-b-2 border-slate-200 pb-4 dark:border-surface-700 max-[479px]:mb-4 max-[479px]:flex-col max-[479px]:gap-1 max-[479px]:pb-3">
           <img
             src={`${import.meta.env.BASE_URL}logo.svg`}
             alt="SPEC Search"
@@ -220,7 +220,7 @@ export default function App() {
               <button
                 key={id}
                 type="button"
-                className={`cursor-pointer rounded border border-slate-200 bg-transparent px-3 py-1 text-xs text-slate-500 transition-colors hover:border-primary-500 hover:text-primary-500 dark:border-surface-700 dark:text-slate-400 dark:hover:border-primary-300 dark:hover:text-primary-300${id === suiteId ? " border-primary-500 bg-primary-500 text-white hover:text-white dark:bg-primary-300 dark:text-surface-900" : ""}`}
+                className={`cursor-pointer rounded border px-3 py-1 text-xs transition-colors ${id === suiteId ? "border-primary-500 bg-primary-500 text-white dark:border-primary-300 dark:bg-primary-300 dark:text-surface-900" : "border-slate-200 bg-transparent text-slate-500 hover:border-primary-500 hover:text-primary-500 dark:border-surface-700 dark:text-slate-400 dark:hover:border-primary-300 dark:hover:text-primary-300"}`}
                 onClick={() => handleSuiteChange(id)}
               >
                 {getSuite(id).name}
