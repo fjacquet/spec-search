@@ -38,14 +38,36 @@
 
 :root {
   --bg: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text: #1a1a2e;
-  --text-secondary: #6c757d;
-  --border: #dee2e6;
-  --accent: #0d6efd;
-  --accent-hover: #0b5ed7;
-  --row-hover: #e8f0fe;
-  --success: #198754;
+  --bg-secondary: #f8fafc; /* slate-50 */
+  --text: #0f172a; /* ink */
+  --text-secondary: #475569; /* inkMuted */
+  --border: #e2e8f0; /* slate-200 */
+  --primary: #3245b7; /* navy primary-500 (was undefined — bug fix) */
+  --accent: #3245b7; /* navy primary-500 */
+  --accent-hover: #2a3a9c; /* darker navy (hover) */
+  --row-hover: #eef2ff; /* primary-50 tint */
+  --success: #4aa342; /* util-low green */
+  --danger: #df202e; /* util-high red */
+}
+
+/* Dark mode for legacy (CSS-var) components — a later plan migrates these to
+ * Tailwind `dark:` utilities; until then this var-override block drives it. */
+.dark {
+  --bg: #11161f; /* surface-800 */
+  --bg-secondary: #232933; /* surface-700 */
+  --text: #f1f5f9; /* slate-100 */
+  --text-secondary: #94a3b8; /* slate-400 */
+  --border: #232933; /* surface-700 */
+  --accent: #819ae9; /* navy primary-300 (reads on dark) */
+  --accent-hover: #b0c2f9; /* primary-200 */
+  --row-hover: #1e2540; /* dark navy tint */
+}
+
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 
 * {
@@ -641,7 +663,7 @@ body {
 }
 
 .comparison-grid__value--worse {
-  color: #dc3545;
+  color: var(--danger);
 }
 
 .comparison-grid__change {
@@ -656,7 +678,7 @@ body {
 }
 
 .comparison-grid__change--negative {
-  color: #dc3545;
+  color: var(--danger);
   font-weight: 600;
 }
 
