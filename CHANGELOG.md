@@ -20,8 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Recolored the web app, comparison charts, PPTX export, favicon/logo/manifest
   to the navy/gold Midnight Executive palette (As-Is navy, To-Be gold; green/red
   confined to the delta column).
-
-### Fixed
+- Migrated the entire web UI from ~1000 lines of hand-written BEM CSS to
+  idiomatic utility-first Tailwind v4 (`dark:`/responsive variants, a thin
+  `@layer components` for `panel`/`btn`/`field`/`num`). `index.css` is now
+  `@theme` + layers + reset + a small chart-SVG-internal block only; the legacy
+  CSS-variable bridge is gone.
 
 - Dead `var(--primary)` reference in `.suite-btn` (hover/active color now works).
 

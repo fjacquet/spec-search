@@ -33,6 +33,12 @@ light on white.
 - Web migrates to Tailwind v4 (component utility rewrite tracked in a follow-up plan).
 - Numeric values use a mono font (JetBrains Mono web / Consolas PPTX).
 - Charts/pptx must consume `tokens.js`, never raw hex literals.
+- Completed: the full web UI (App + 9 components) is now idiomatic utility-first
+  Tailwind. `index.css` retains only `@theme`, `@layer base/components`, the CSS
+  reset, and a small chart-SVG-internal block — the live `<svg>` needs real CSS
+  (the export path injects `barCss()`/`radarCss()` from `tokens.js` into a
+  standalone clone). That block uses concrete hex kept in sync with `tokens.js`
+  plus `.dark` variants. The legacy `:root`/`.dark` CSS-variable bridge is gone.
 
 ## Alternatives Considered
 
