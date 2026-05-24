@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COLORS, FONT_MONO, chartSeries, pptxColors } from "./tokens.js";
+import { COLORS, chartSeries, FONT_MONO, pptxColors } from "./tokens.js";
 
 describe("Midnight Executive tokens", () => {
   it("As-Is = navy primary-500, To-Be = gold accent", () => {

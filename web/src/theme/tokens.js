@@ -61,8 +61,8 @@ export const pptxColors = {
   deltaDown: bare(COLORS.utilHigh), // red
   ink: bare(COLORS.ink),
   inkMuted: bare(COLORS.inkMuted),
-  headerBg: "f1f5f9", // surface-100 tint
-  altRow: "f8fafc",
-  paper: "ffffff",
+  headerBg: "f1f5f9", // slate-100
+  altRow: "f8fafc", // slate-50
+  paper: bare(COLORS.paper),
   hairline: bare(COLORS.slate200),
 };
