@@ -35,6 +35,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unlayered CSS reset was overriding Tailwind padding/margin utilities; moved it
   into `@layer base` so utilities apply (fixes collapsed table padding + layout).
 
+### Security
+
+- Refreshed both Python lockfiles via `uv lock --upgrade` to clear newly
+  published pip-audit advisories blocking the release (urllib3 → 2.7.0,
+  idna → 3.15, starlette → 1.1.0, lxml, python-multipart, pip, requests).
+
 ## [1.7.2] - 2026-04-17
 
 ### Security
