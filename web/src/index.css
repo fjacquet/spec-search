@@ -113,42 +113,6 @@ body {
   line-height: 1.5;
 }
 
-/* Pagination */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  padding: 0.75rem;
-}
-
-.pagination button {
-  padding: 0.4rem 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--bg);
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.pagination button:hover:not(:disabled) {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
-}
-
-.pagination button:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.pagination .page-info {
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-}
-
-
 /* ── Comparison Tray ── */
 .comparison-tray {
   position: fixed;
@@ -516,25 +480,6 @@ body {
     flex-direction: column;
     gap: 0.25rem;
     align-items: center;
-  }
-
-  .pagination {
-    gap: 0.25rem;
-    flex-wrap: wrap;
-  }
-
-  .pagination button {
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0.5rem;
-    font-size: 0.8rem;
-  }
-
-  .pagination .page-info {
-    width: 100%;
-    text-align: center;
-    order: -1;
-    margin-bottom: 0.25rem;
   }
 
   .comparison-tray {
