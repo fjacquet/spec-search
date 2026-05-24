@@ -5,6 +5,7 @@ import FilterBar from "./components/FilterBar.jsx";
 import Pagination from "./components/Pagination.jsx";
 import ResultsList from "./components/ResultsList.jsx";
 import ResultsTable from "./components/ResultsTable.jsx";
+import { ThemeToggle } from "./components/ThemeToggle.jsx";
 import { DEFAULT_SUITE, getSuite, SUITE_IDS } from "./constants/suites.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
 import { useSearch } from "./hooks/useSearch.js";
@@ -218,6 +219,7 @@ export default function App() {
               </button>
             ))}
           </div>
+          <ThemeToggle />
           <span className="subtitle">
             {data.length.toLocaleString()} benchmark entries
           </span>
