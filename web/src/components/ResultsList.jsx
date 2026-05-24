@@ -48,11 +48,17 @@ export default function ResultsList({
   };
 
   return (
-    <div className="results-list">
-      <div className="sort-controls">
-        <label htmlFor="sort-select">Sort by</label>
+    <div className="flex flex-col gap-2">
+      <div className="mb-3 flex items-center gap-2">
+        <label
+          htmlFor="sort-select"
+          className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400"
+        >
+          Sort by
+        </label>
         <select
           id="sort-select"
+          className="field min-h-11 flex-1"
           value={sortConfig.key}
           onChange={handleSortKey}
         >
@@ -64,7 +70,7 @@ export default function ResultsList({
         </select>
         <button
           type="button"
-          className="sort-direction-btn"
+          className="btn min-h-11 min-w-11 hover:border-primary-500 hover:bg-primary-500 hover:text-white dark:hover:border-primary-300 dark:hover:bg-primary-300 dark:hover:text-surface-900"
           onClick={toggleDirection}
           aria-label={`Sort ${sortConfig.direction === "asc" ? "descending" : "ascending"}`}
         >
