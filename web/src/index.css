@@ -73,10 +73,14 @@ html.dark {
   color-scheme: dark;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Reset lives in @layer base so Tailwind utilities (px-*, py-*, mx-auto, …)
+ * still win — an UNLAYERED universal reset would override every utility. */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 /* Chart SVG internals — on-screen styling for the live <svg> (the export path

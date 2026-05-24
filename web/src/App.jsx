@@ -190,7 +190,7 @@ export default function App() {
   if (showComparison && selected.length === 2) {
     return (
       <SuiteContext.Provider value={suite}>
-        <div className="mx-auto max-w-[1400px] p-2 min-[480px]:p-3 md:p-4">
+        <div className="w-full p-2 min-[480px]:p-3 md:p-4">
           <ComparisonView
             systems={selected}
             onClose={closeComparison}
@@ -204,7 +204,7 @@ export default function App() {
   return (
     <SuiteContext.Provider value={suite}>
       <div
-        className={`mx-auto max-w-[1400px] p-2 min-[480px]:p-3 md:p-4 ${selected.length > 0 ? "pb-[140px] md:pb-20" : ""}`}
+        className={`w-full p-2 min-[480px]:p-3 md:p-4 ${selected.length > 0 ? "pb-[140px] md:pb-20" : ""}`}
       >
         <header className="mb-6 flex items-baseline gap-4 border-b-2 border-slate-200 pb-4 dark:border-surface-700 max-[479px]:mb-4 max-[479px]:flex-col max-[479px]:gap-1 max-[479px]:pb-3">
           <img
