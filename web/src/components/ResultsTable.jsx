@@ -70,7 +70,7 @@ export default function ResultsTable({
         <thead>
           <tr>
             <th
-              className="w-10 text-center sticky top-0 cursor-pointer select-none whitespace-nowrap border-b-2 border-slate-200 bg-slate-50 px-3 py-2.5 text-left font-semibold hover:text-primary-500 dark:border-surface-700 dark:bg-surface-800 dark:hover:text-primary-300 max-[479px]:px-2 max-[479px]:py-1.5"
+              className="w-10 text-center sticky top-0 cursor-pointer select-none whitespace-nowrap border-b-2 border-slate-200 bg-slate-50 px-3 py-2.5 font-semibold hover:text-primary-500 dark:border-surface-700 dark:bg-surface-800 dark:hover:text-primary-300 max-[479px]:px-2 max-[479px]:py-1.5"
               aria-label="Select for comparison"
             />
             {COLUMNS.map((col) => (
@@ -97,7 +97,7 @@ export default function ResultsTable({
             return (
               <tr
                 key={row.id}
-                className={`hover:bg-primary-50 dark:hover:bg-surface-700${checked ? " bg-primary-50 dark:bg-surface-700" : ""}`}
+                className={`hover:bg-primary-50 dark:hover:bg-surface-700 ${checked ? "bg-primary-50 dark:bg-surface-700" : ""}`}
               >
                 <td className="w-10 text-center whitespace-nowrap border-b border-slate-200 px-3 py-2 dark:border-surface-700 max-[479px]:px-2 max-[479px]:py-1.5">
                   <input

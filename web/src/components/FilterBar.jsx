@@ -108,7 +108,7 @@ export default function FilterBar({
             placeholder="Min"
             value={filters.minCores}
             onChange={(e) => update("minCores", e.target.value)}
-            className="field w-[90px] max-[767px]:w-auto max-[767px]:min-h-11 max-[767px]:text-base"
+            className="field w-[90px] max-[767px]:w-auto max-[767px]:min-h-11 max-[767px]:text-base max-[767px]:flex-1 max-[767px]:min-w-0"
           />
           <span>-</span>
           <input
@@ -117,7 +117,7 @@ export default function FilterBar({
             placeholder="Max"
             value={filters.maxCores}
             onChange={(e) => update("maxCores", e.target.value)}
-            className="field w-[90px] max-[767px]:w-auto max-[767px]:min-h-11 max-[767px]:text-base"
+            className="field w-[90px] max-[767px]:w-auto max-[767px]:min-h-11 max-[767px]:text-base max-[767px]:flex-1 max-[767px]:min-w-0"
           />
         </div>
       </div>
