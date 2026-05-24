@@ -113,65 +113,6 @@ body {
   line-height: 1.5;
 }
 
-/* Results Table */
-.table-container {
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
-.results-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
-}
-
-.results-table th {
-  position: sticky;
-  top: 0;
-  background: var(--bg-secondary);
-  padding: 0.6rem 0.75rem;
-  text-align: left;
-  font-weight: 600;
-  border-bottom: 2px solid var(--border);
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-}
-
-.results-table th:hover {
-  color: var(--accent);
-}
-
-.results-table th .sort-indicator {
-  margin-left: 0.25rem;
-  font-size: 0.7rem;
-}
-
-.results-table td {
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-
-.results-table tbody tr:hover {
-  background: var(--row-hover);
-}
-
-.results-table .num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.results-table a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.results-table a:hover {
-  text-decoration: underline;
-}
-
 /* Pagination */
 .pagination {
   display: flex;
@@ -691,23 +632,6 @@ body {
   background: #f9b935;
 }
 
-/* ── Checkbox column in table ── */
-.results-table .checkbox-cell {
-  width: 40px;
-  text-align: center;
-}
-
-.results-table .checkbox-cell input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--accent);
-}
-
-.results-table tr.row--selected {
-  background: var(--row-hover);
-}
-
 /* ── Responsive: Tablet (< 768px) ── */
 @media (max-width: 767px) {
   .comparison-charts {
@@ -813,14 +737,3 @@ body {
   }
 }
 
-/* ── Responsive: Phone (< 480px) ── */
-@media (max-width: 479px) {
-  .results-table {
-    font-size: 0.75rem;
-  }
-
-  .results-table th,
-  .results-table td {
-    padding: 0.35rem 0.5rem;
-  }
-}
