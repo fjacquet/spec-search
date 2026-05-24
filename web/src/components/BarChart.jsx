@@ -1,12 +1,18 @@
 import { useRef } from "react";
 import { useSuite } from "../hooks/useSuite.js";
+import { chartSeries, FONT_MONO } from "../theme/tokens.js";
 
-const BAR_CSS = `
-  .bar-chart__label { font-size: 11px; fill: #6c757d; font-family: sans-serif; }
-  .bar-chart__bar-a { fill: #0d6efd; opacity: 0.85; }
-  .bar-chart__bar-b { fill: #dc3545; opacity: 0.75; }
-  .bar-chart__value { font-size: 10px; fill: #6c757d; font-family: sans-serif; }
+/** CSS injected into the serialized SVG (export needs concrete hex, not
+ * Tailwind utilities). `theme` defaults to light so exports stay on white. */
+export function barCss(theme = "light") {
+  const s = chartSeries[theme] ?? chartSeries.light;
+  return `
+  .bar-chart__label { font-size: 11px; fill: ${s.label}; font-family: ${FONT_MONO}; }
+  .bar-chart__bar-a { fill: ${s.asIs}; opacity: 0.85; }
+  .bar-chart__bar-b { fill: ${s.toBe}; opacity: 0.85; }
+  .bar-chart__value { font-size: 10px; fill: ${s.label}; font-family: ${FONT_MONO}; }
 `;
+}
 
 export function prepareBarSvg(svgEl) {
   const w = svgEl.viewBox.baseVal.width || svgEl.clientWidth;
@@ -15,7 +21,7 @@ export function prepareBarSvg(svgEl) {
   clone.setAttribute("width", w);
   clone.setAttribute("height", h);
   const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
-  style.textContent = BAR_CSS;
+  style.textContent = barCss();
   clone.insertBefore(style, clone.firstChild);
   return { clone, w, h };
 }
@@ -84,11 +90,11 @@ export default function BarChart({ systems, labelA, labelB }) {
   const width = LABEL_WIDTH + MAX_BAR + 80;
 
   return (
-    <div className="bar-chart">
+    <div className="flex flex-col items-center justify-center">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
-        className="bar-chart__svg"
+        className="w-full max-w-[400px]"
         role="img"
         aria-label="Bar chart comparing system metrics"
       >
@@ -147,17 +153,19 @@ export default function BarChart({ systems, labelA, labelB }) {
           );
         })}
       </svg>
-      <div className="bar-chart__legend">
-        <span className="bar-chart__legend-a">
+      <div className="mt-3 flex gap-6 text-xs font-semibold max-[767px]:flex-col max-[767px]:items-center max-[767px]:gap-1">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-[3px] bg-primary-500 dark:bg-primary-300" />
           {labelA ?? a.processor ?? "System A"}
         </span>
-        <span className="bar-chart__legend-b">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-[3px] bg-accent-500" />
           {labelB ?? b.processor ?? "System B"}
         </span>
       </div>
       <button
         type="button"
-        className="btn-export btn-export--chart"
+        className="btn mx-auto mt-2 block px-3 py-1.5 text-xs"
         onClick={() =>
           exportPng(
             svgRef.current,

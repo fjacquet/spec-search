@@ -48,41 +48,52 @@ function formatDelta(toBeVal, asIsVal) {
   return { diff, sign, pct };
 }
 
+const GRID_COL_HEADER =
+  "border-b-2 border-slate-200 bg-slate-50 px-3 py-3 text-[0.9rem] font-bold dark:border-surface-700 dark:bg-surface-800";
+const GRID_LABEL =
+  "border-b border-slate-200 bg-slate-50 px-3 py-2 text-[0.85rem] font-semibold text-slate-500 dark:border-surface-700 dark:bg-surface-800 dark:text-slate-400";
+const GRID_VALUE =
+  "border-b border-slate-200 px-3 py-2 text-[0.85rem] dark:border-surface-700";
+const GRID_CHANGE =
+  "border-b border-slate-200 px-3 py-2 text-center text-[0.85rem] font-mono tabular-nums text-slate-500 dark:border-surface-700 dark:text-slate-400";
+const BETTER = " font-semibold text-util-low";
+const WORSE = " text-util-high";
+
 function DesktopGrid({ systems, fields, suite }) {
   const [asIs, toBe] = systems;
 
   return (
-    <div className="comparison-grid">
-      <div className="comparison-grid__col-header" />
-      <div className="comparison-grid__col-header">
+    <div className="grid grid-cols-[140px_1fr_1fr_120px] overflow-hidden rounded-lg border border-slate-200 dark:border-surface-700">
+      <div className={GRID_COL_HEADER} />
+      <div className={GRID_COL_HEADER}>
         As-Is: {asIs.processor ?? "System A"}
       </div>
-      <div className="comparison-grid__col-header">
+      <div className={GRID_COL_HEADER}>
         To-Be: {toBe.processor ?? "System B"}
       </div>
-      <div className="comparison-grid__col-header">Change</div>
+      <div className={GRID_COL_HEADER}>Change</div>
 
       {fields.map((field) => {
         const valAsIs = asIs[field.key];
         const valToBe = toBe[field.key];
         const delta = field.numeric ? formatDelta(valToBe, valAsIs) : null;
 
-        let classAsIs = "comparison-grid__value";
-        let classToBe = "comparison-grid__value";
-        let changeClass = "comparison-grid__change";
+        let classAsIs = GRID_VALUE;
+        let classToBe = GRID_VALUE;
+        let changeClass = GRID_CHANGE;
         if (delta && delta.diff > 0) {
-          classToBe += " comparison-grid__value--better";
-          classAsIs += " comparison-grid__value--worse";
-          changeClass += " comparison-grid__change--positive";
+          classToBe += BETTER;
+          classAsIs += WORSE;
+          changeClass += BETTER;
         } else if (delta && delta.diff < 0) {
-          classToBe += " comparison-grid__value--worse";
-          classAsIs += " comparison-grid__value--better";
-          changeClass += " comparison-grid__change--negative";
+          classToBe += WORSE;
+          classAsIs += BETTER;
+          changeClass += WORSE;
         }
 
         return (
           <div key={field.key} style={{ display: "contents" }}>
-            <div className="comparison-grid__label">{field.label}</div>
+            <div className={GRID_LABEL}>{field.label}</div>
             <div className={classAsIs}>
               {formatValue(field, valAsIs, suite)}
             </div>
@@ -92,9 +103,7 @@ function DesktopGrid({ systems, fields, suite }) {
             <div className={changeClass}>
               {delta && delta.diff !== 0
                 ? `${delta.sign}${delta.diff}${delta.pct ? ` (${delta.sign}${delta.pct}%)` : ""}`
-                : field.numeric
-                  ? "\u2014"
-                  : "\u2014"}
+                : "\u2014"}
             </div>
           </div>
         );
@@ -111,13 +120,19 @@ function MobileComparison({ systems, fields, suite }) {
   return (
     <div>
       {systems.map((sys, i) => (
-        <div key={sys.id} className="comparison-mobile-card">
-          <h3>
+        <div
+          key={sys.id}
+          className="mb-3 rounded-lg border border-slate-200 p-3 dark:border-surface-700"
+        >
+          <h3 className="mb-2 border-b border-slate-200 pb-1.5 text-[0.95rem] dark:border-surface-700">
             {roles[i]}: {sys.processor ?? "Unknown"}
           </h3>
           {fields.map((field) => (
-            <div key={field.key} className="comparison-mobile-row">
-              <span className="comparison-mobile-row__label">
+            <div
+              key={field.key}
+              className="flex justify-between py-1 text-[0.85rem]"
+            >
+              <span className="font-semibold text-slate-500 dark:text-slate-400">
                 {field.label}
               </span>
               <span>{formatValue(field, sys[field.key], suite)}</span>
@@ -126,21 +141,26 @@ function MobileComparison({ systems, fields, suite }) {
         </div>
       ))}
 
-      <div className="comparison-delta-section">
-        <h3>Changes (To-Be vs As-Is)</h3>
+      <div className="rounded-lg border border-primary-500 bg-primary-50 p-3 dark:border-primary-300 dark:bg-surface-800">
+        <h3 className="mb-2 text-[0.9rem] text-primary-500 dark:text-primary-300">
+          Changes (To-Be vs As-Is)
+        </h3>
         {numericFields.map((field) => {
           const delta = formatDelta(toBe[field.key], asIs[field.key]);
           if (!delta || delta.diff === 0) return null;
           return (
-            <div key={field.key} className="comparison-mobile-row">
-              <span className="comparison-mobile-row__label">
+            <div
+              key={field.key}
+              className="flex justify-between py-1 text-[0.85rem]"
+            >
+              <span className="font-semibold text-slate-500 dark:text-slate-400">
                 {field.label}
               </span>
               <span
                 className={
                   delta.diff > 0
-                    ? "comparison-grid__value--better"
-                    : "comparison-grid__value--worse"
+                    ? "font-semibold text-util-low"
+                    : "text-util-high"
                 }
               >
                 {delta.sign}
@@ -260,31 +280,31 @@ export default function ComparisonView({ systems, onClose, onSwap }) {
   }
 
   return (
-    <div className="comparison-view">
-      <div className="comparison-view__header">
-        <h2>System Comparison</h2>
-        <div className="comparison-view__actions">
+    <div className="py-4">
+      <div className="mb-6 flex items-center justify-between border-b-2 border-slate-200 pb-4 dark:border-surface-700">
+        <h2 className="text-xl">System Comparison</h2>
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="comparison-view__swap"
+            className="cursor-pointer rounded border border-primary-500 bg-transparent px-4 py-2 text-sm text-primary-500 hover:bg-primary-500 hover:text-white dark:border-primary-300 dark:text-primary-300 dark:hover:bg-primary-300 dark:hover:text-surface-900"
             onClick={onSwap}
             title="Swap As-Is and To-Be"
           >
             {"\u21C4"} Swap
           </button>
-          <button type="button" className="btn-export" onClick={copyTsv}>
+          <button type="button" className="btn px-4" onClick={copyTsv}>
             {copied ? "Copied!" : "Copy TSV"}
           </button>
           <button
             type="button"
-            className="btn-export"
+            className="btn px-4"
             onClick={() => exportToCsv(systems, fields, suite)}
           >
             Download CSV
           </button>
           <button
             type="button"
-            className="btn-export"
+            className="btn px-4"
             onClick={() =>
               exportBothCharts(
                 chartsRef.current,
@@ -299,7 +319,7 @@ export default function ComparisonView({ systems, onClose, onSwap }) {
           </button>
           <button
             type="button"
-            className="btn-export"
+            className="btn px-4"
             onClick={() =>
               exportToPptx({
                 systemA: asIs,
@@ -313,17 +333,16 @@ export default function ComparisonView({ systems, onClose, onSwap }) {
           >
             Export PPTX
           </button>
-          <button
-            type="button"
-            className="comparison-view__close"
-            onClick={onClose}
-          >
+          <button type="button" className="btn px-4" onClick={onClose}>
             Back to Results
           </button>
         </div>
       </div>
 
-      <div className="comparison-charts" ref={chartsRef}>
+      <div
+        className="mb-8 grid grid-cols-2 gap-6 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-surface-700 dark:bg-surface-800 max-[767px]:grid-cols-1 max-[767px]:gap-4 max-[767px]:p-4"
+        ref={chartsRef}
+      >
         <RadarChart systems={systems} labelA={asIsLabel} labelB={toBeLabel} />
         <BarChart systems={systems} labelA={asIsLabel} labelB={toBeLabel} />
       </div>

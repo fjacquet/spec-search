@@ -1,4 +1,5 @@
 import { getSuite } from "../constants/suites.js";
+import { pptxColors } from "../theme/tokens.js";
 
 const BASE_FIELDS = [
   { key: "processor", label: "Processor" },
@@ -28,12 +29,14 @@ function buildFields(suite) {
   return fields;
 }
 
-const COLOR_BLUE = "0D6EFD";
-const COLOR_RED = "DC3545";
-const COLOR_GREEN = "198754";
-const COLOR_GRAY = "6C757D";
-const COLOR_HEADER_BG = "F0F0F0";
-const COLOR_ALT_ROW = "FAFAFA";
+const COLOR_AS_IS = pptxColors.asIs; // navy (legend marker)
+const COLOR_TO_BE = pptxColors.toBe; // gold (legend marker)
+const COLOR_INK = pptxColors.ink;
+const COLOR_INK_MUTED = pptxColors.inkMuted;
+const COLOR_HEADER_BG = pptxColors.headerBg;
+const COLOR_ALT_ROW = pptxColors.altRow;
+const COLOR_DELTA_UP = pptxColors.deltaUp;
+const COLOR_DELTA_DOWN = pptxColors.deltaDown;
 
 /** Delta = To-Be minus As-Is: positive = improvement. */
 function formatDelta(toBeVal, asIsVal) {
@@ -54,8 +57,8 @@ function formatCellValue(field, val, suite) {
 /** Color based on To-Be vs As-Is: green = improvement, red = regression. */
 function deltaColor(toBeVal, asIsVal) {
   if (toBeVal == null || asIsVal == null || toBeVal === asIsVal)
-    return COLOR_GRAY;
-  return toBeVal > asIsVal ? COLOR_GREEN : COLOR_RED;
+    return COLOR_INK_MUTED;
+  return toBeVal > asIsVal ? COLOR_DELTA_UP : COLOR_DELTA_DOWN;
 }
 
 /** systemA = As-Is, systemB = To-Be. Delta = To-Be minus As-Is. */
@@ -77,7 +80,7 @@ export function buildSlideData(systemA, systemB, suite) {
       options: {
         bold: true,
         fill: COLOR_HEADER_BG,
-        color: "333333",
+        color: COLOR_INK,
         align: "left",
       },
     },
@@ -86,7 +89,7 @@ export function buildSlideData(systemA, systemB, suite) {
       options: {
         bold: true,
         fill: COLOR_HEADER_BG,
-        color: COLOR_BLUE,
+        color: COLOR_INK,
         align: "center",
       },
     },
@@ -95,7 +98,7 @@ export function buildSlideData(systemA, systemB, suite) {
       options: {
         bold: true,
         fill: COLOR_HEADER_BG,
-        color: COLOR_RED,
+        color: COLOR_INK,
         align: "center",
       },
     },
@@ -104,7 +107,7 @@ export function buildSlideData(systemA, systemB, suite) {
       options: {
         bold: true,
         fill: COLOR_HEADER_BG,
-        color: "333333",
+        color: COLOR_INK,
         align: "center",
       },
     },
@@ -114,26 +117,31 @@ export function buildSlideData(systemA, systemB, suite) {
     const valAsIs = systemA[field.key];
     const valToBe = systemB[field.key];
     const isAlt = i % 2 === 1;
-    const rowFill = isAlt ? COLOR_ALT_ROW : "FFFFFF";
+    const rowFill = isAlt ? COLOR_ALT_ROW : pptxColors.paper;
 
     const deltaText = field.numeric ? formatDelta(valToBe, valAsIs) : "\u2014";
     const deltaCellColor = field.numeric
       ? deltaColor(valToBe, valAsIs)
-      : COLOR_GRAY;
+      : COLOR_INK_MUTED;
 
     return [
       { text: field.label, options: { fill: rowFill, align: "left" } },
       {
         text: formatCellValue(field, valAsIs, suite),
-        options: { fill: rowFill, align: "center" },
+        options: { fill: rowFill, align: "center", fontFace: "Consolas" },
       },
       {
         text: formatCellValue(field, valToBe, suite),
-        options: { fill: rowFill, align: "center" },
+        options: { fill: rowFill, align: "center", fontFace: "Consolas" },
       },
       {
         text: deltaText,
-        options: { fill: rowFill, align: "center", color: deltaCellColor },
+        options: {
+          fill: rowFill,
+          align: "center",
+          color: deltaCellColor,
+          fontFace: "Consolas",
+        },
       },
     ];
   });
@@ -195,7 +203,7 @@ export async function exportToPptx({
   pptx.title = title;
 
   const slide = pptx.addSlide();
-  slide.bkgd = "FFFFFF";
+  slide.bkgd = pptxColors.paper;
 
   // Title
   slide.addText(title, {
@@ -205,7 +213,7 @@ export async function exportToPptx({
     h: 0.45,
     fontSize: 18,
     bold: true,
-    color: "222222",
+    color: COLOR_INK,
     align: "center",
     fontFace: "Arial",
   });
@@ -217,18 +225,18 @@ export async function exportToPptx({
     w: 12.33,
     h: 0.3,
     fontSize: 10,
-    color: COLOR_GRAY,
+    color: COLOR_INK_MUTED,
     align: "center",
     fontFace: "Arial",
   });
 
-  // Blue line separator
+  // Navy line separator
   slide.addShape(pptx.shapes.LINE, {
     x: 0.5,
     y: 0.9,
     w: 12.33,
     h: 0,
-    line: { color: COLOR_BLUE, width: 2 },
+    line: { color: COLOR_AS_IS, width: 2 },
   });
 
   // Chart placement: radar (square) gets left ~40%, bar (wider) gets right ~60%
@@ -271,15 +279,15 @@ export async function exportToPptx({
   const nameB = systemB.processor ?? "System B";
   slide.addText(
     [
-      { text: "\u25A0 ", options: { color: COLOR_BLUE, fontSize: 10 } },
+      { text: "\u25A0 ", options: { color: COLOR_AS_IS, fontSize: 10 } },
       {
         text: `As-Is: ${nameA}     `,
-        options: { color: COLOR_GRAY, fontSize: 9 },
+        options: { color: COLOR_INK_MUTED, fontSize: 9 },
       },
-      { text: "\u25A0 ", options: { color: COLOR_RED, fontSize: 10 } },
+      { text: "\u25A0 ", options: { color: COLOR_TO_BE, fontSize: 10 } },
       {
         text: `To-Be: ${nameB}`,
-        options: { color: COLOR_GRAY, fontSize: 9 },
+        options: { color: COLOR_INK_MUTED, fontSize: 9 },
       },
     ],
     {
@@ -300,7 +308,7 @@ export async function exportToPptx({
     colW: [2.5, 3.8, 3.8, 2.23],
     fontSize: 8,
     fontFace: "Arial",
-    border: { pt: 0.5, color: "DDDDDD" },
+    border: { pt: 0.5, color: pptxColors.hairline },
     margin: [2, 4, 2, 4],
   });
 
@@ -314,7 +322,7 @@ export async function exportToPptx({
     w: 12.33,
     h: 0.25,
     fontSize: 7,
-    color: "999999",
+    color: COLOR_INK_MUTED,
     align: "right",
     fontFace: "Arial",
   });

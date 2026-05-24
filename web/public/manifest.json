@@ -5,7 +5,7 @@
   "start_url": "/spec-search/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0d6efd",
+  "theme_color": "#3245b7",
   "icons": [
     {
       "src": "icon-192.png",

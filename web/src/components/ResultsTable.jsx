@@ -53,7 +53,7 @@ export default function ResultsTable({
 
   const sortIndicator = (key) => {
     if (sortConfig.key !== key) return "";
-    return sortConfig.direction === "asc" ? "\u25B2" : "\u25BC";
+    return sortConfig.direction === "asc" ? "▲" : "▼";
   };
 
   const isDisabled = (row) => {
@@ -65,18 +65,29 @@ export default function ResultsTable({
   };
 
   return (
-    <div className="table-container">
-      <table className="results-table">
+    <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-surface-700">
+      <table className="w-full border-collapse text-sm max-[479px]:text-xs">
         <thead>
           <tr>
-            <th className="checkbox-cell" aria-label="Select for comparison" />
+            <th
+              className="w-10 text-center sticky top-0 cursor-pointer select-none whitespace-nowrap border-b-2 border-slate-200 bg-slate-50 px-3 py-3 font-semibold hover:text-primary-500 dark:border-surface-700 dark:bg-surface-800 dark:hover:text-primary-300 max-[479px]:px-2 max-[479px]:py-2"
+              aria-label="Select for comparison"
+            />
             {COLUMNS.map((col) => (
-              <th key={col.key} onClick={() => handleSort(col.key)}>
+              <th
+                key={col.key}
+                onClick={() => handleSort(col.key)}
+                className="sticky top-0 cursor-pointer select-none whitespace-nowrap border-b-2 border-slate-200 bg-slate-50 px-3 py-3 text-left font-semibold hover:text-primary-500 dark:border-surface-700 dark:bg-surface-800 dark:hover:text-primary-300 max-[479px]:px-2 max-[479px]:py-2"
+              >
                 {col.label}
-                <span className="sort-indicator">{sortIndicator(col.key)}</span>
+                <span className="ml-1 text-[0.7rem]">
+                  {sortIndicator(col.key)}
+                </span>
               </th>
             ))}
-            <th>Link</th>
+            <th className="sticky top-0 cursor-pointer select-none whitespace-nowrap border-b-2 border-slate-200 bg-slate-50 px-3 py-3 text-left font-semibold hover:text-primary-500 dark:border-surface-700 dark:bg-surface-800 dark:hover:text-primary-300 max-[479px]:px-2 max-[479px]:py-2">
+              Link
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -84,8 +95,11 @@ export default function ResultsTable({
             const checked = selectedIds.has(row.id);
             const disabled = isDisabled(row);
             return (
-              <tr key={row.id} className={checked ? "row--selected" : ""}>
-                <td className="checkbox-cell">
+              <tr
+                key={row.id}
+                className={`hover:bg-primary-50 dark:hover:bg-surface-700 ${checked ? "bg-primary-50 dark:bg-surface-700" : ""}`}
+              >
+                <td className="w-10 text-center whitespace-nowrap border-b border-slate-200 px-3 py-3 dark:border-surface-700 max-[479px]:px-2 max-[479px]:py-2">
                   <input
                     type="checkbox"
                     checked={checked}
@@ -99,10 +113,14 @@ export default function ResultsTable({
                         ? "Same benchmark required"
                         : undefined
                     }
+                    className="h-[18px] w-[18px] cursor-pointer accent-primary-500"
                   />
                 </td>
                 {COLUMNS.map((col) => (
-                  <td key={col.key} className={col.numeric ? "num" : ""}>
+                  <td
+                    key={col.key}
+                    className={`whitespace-nowrap border-b border-slate-200 px-3 py-3 dark:border-surface-700 max-[479px]:px-2 max-[479px]:py-2 ${col.numeric ? "num" : ""}`}
+                  >
                     {col.key === "benchmark" ? (
                       <span title={row[col.key]}>
                         {suite.benchmarkLabels[row[col.key]] ??
@@ -114,12 +132,13 @@ export default function ResultsTable({
                     )}
                   </td>
                 ))}
-                <td>
+                <td className="whitespace-nowrap border-b border-slate-200 px-3 py-3 dark:border-surface-700 max-[479px]:px-2 max-[479px]:py-2">
                   {row.resultUrl ? (
                     <a
                       href={specUrl(row.resultUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="text-primary-500 no-underline hover:underline dark:text-primary-300"
                     >
                       View
                     </a>

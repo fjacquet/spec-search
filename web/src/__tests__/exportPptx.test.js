@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { pptxColors } from "../theme/tokens.js";
 
 // Mock pptxgenjs before importing the module under test
 const mockWriteFile = vi.fn().mockResolvedValue(undefined);
@@ -129,6 +130,25 @@ describe("buildSlideData (CPU2017)", () => {
     expect(filename).toBe(
       "comparison-AMD_EPYC_9754-vs-Intel_Xeon_w9-3595X.pptx",
     );
+  });
+
+  it("uses ink As-Is/To-Be header labels and util delta colors", () => {
+    const { tableRows } = buildSlideData(SYSTEM_A, SYSTEM_B, CPU2017_SUITE);
+    const header = tableRows[0];
+    // As-Is/To-Be identity is carried by the legend marker glyphs; header text
+    // is ink (gold-on-light fails contrast).
+    expect(header[1].options.color).toBe(pptxColors.ink);
+    expect(header[2].options.color).toBe(pptxColors.ink);
+
+    // Numeric delta cells are util-low (improve) / util-high (regress) / inkMuted.
+    const dataRows = tableRows.slice(1);
+    const palette = new Set([
+      pptxColors.deltaUp,
+      pptxColors.deltaDown,
+      pptxColors.inkMuted,
+    ]);
+    for (const r of dataRows)
+      expect(palette.has(r[3].options.color)).toBe(true);
   });
 });
 

@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Midnight Executive theme shared with vatlas: Tailwind v4 `@theme` tokens as
+  the single source of truth, mirrored to `web/src/theme/tokens.js` for charts
+  and the PPTX export. 3-state dark mode (auto/light/dark) with FOUC-safe init.
+- Monospace font (JetBrains Mono) for numeric values on web; Consolas for
+  metric cells in the PPTX export.
+
+### Changed
+
+- Recolored the web app, comparison charts, PPTX export, favicon/logo/manifest
+  to the navy/gold Midnight Executive palette (As-Is navy, To-Be gold; green/red
+  confined to the delta column).
+- Migrated the entire web UI from ~1000 lines of hand-written BEM CSS to
+  idiomatic utility-first Tailwind v4 (`dark:`/responsive variants, a thin
+  `@layer components` for `panel`/`btn`/`field`/`num`). `index.css` is now
+  `@theme` + layers + reset + a small chart-SVG-internal block only; the legacy
+  CSS-variable bridge is gone.
+
+- Dead `var(--primary)` reference in `.suite-btn` (hover/active color now works).
+
 ## [1.7.2] - 2026-04-17
 
 ### Security

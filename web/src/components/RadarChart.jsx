@@ -1,15 +1,23 @@
 import { useRef } from "react";
 import { useSuite } from "../hooks/useSuite.js";
+import { chartSeries, FONT_MONO } from "../theme/tokens.js";
 
-const RADAR_CSS = `
-  .radar-chart__ring { fill: none; stroke: #dee2e6; stroke-width: 0.5; }
-  .radar-chart__axis { stroke: #dee2e6; stroke-width: 0.5; }
-  .radar-chart__area-a { fill: rgba(13,110,253,0.2); stroke: #0d6efd; stroke-width: 2; }
-  .radar-chart__area-b { fill: rgba(220,53,69,0.15); stroke: #dc3545; stroke-width: 2; }
-  .radar-chart__dot-a { fill: #0d6efd; }
-  .radar-chart__dot-b { fill: #dc3545; }
-  .radar-chart__label { font-size: 11px; fill: #6c757d; font-family: sans-serif; }
+export function radarCss(theme = "light") {
+  const s = chartSeries[theme] ?? chartSeries.light;
+  const rgba = (hex, a) => {
+    const n = Number.parseInt(hex.slice(1), 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  };
+  return `
+  .radar-chart__ring { fill: none; stroke: ${s.grid}; stroke-width: 0.5; }
+  .radar-chart__axis { stroke: ${s.grid}; stroke-width: 0.5; }
+  .radar-chart__area-a { fill: ${rgba(s.asIs, 0.2)}; stroke: ${s.asIs}; stroke-width: 2; }
+  .radar-chart__area-b { fill: ${rgba(s.toBe, 0.2)}; stroke: ${s.toBe}; stroke-width: 2; }
+  .radar-chart__dot-a { fill: ${s.asIs}; }
+  .radar-chart__dot-b { fill: ${s.toBe}; }
+  .radar-chart__label { font-size: 11px; fill: ${s.label}; font-family: ${FONT_MONO}; }
 `;
+}
 
 export function prepareRadarSvg(svgEl) {
   const w = svgEl.viewBox.baseVal.width || svgEl.clientWidth;
@@ -18,7 +26,7 @@ export function prepareRadarSvg(svgEl) {
   clone.setAttribute("width", w);
   clone.setAttribute("height", h);
   const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
-  style.textContent = RADAR_CSS;
+  style.textContent = radarCss();
   clone.insertBefore(style, clone.firstChild);
   return { clone, w, h };
 }
@@ -102,11 +110,11 @@ export default function RadarChart({ systems, labelA, labelB }) {
   const polyB = pointsB.map((p) => `${p.x},${p.y}`).join(" ");
 
   return (
-    <div className="radar-chart">
+    <div className="flex flex-col items-center">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="radar-chart__svg"
+        className="w-full max-w-[320px]"
         role="img"
         aria-label="Radar chart comparing system metrics"
       >
@@ -180,17 +188,19 @@ export default function RadarChart({ systems, labelA, labelB }) {
           );
         })}
       </svg>
-      <div className="radar-chart__legend">
-        <span className="radar-chart__legend-a">
+      <div className="mt-3 flex gap-6 text-xs font-semibold max-[767px]:flex-col max-[767px]:items-center max-[767px]:gap-1">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-[3px] bg-primary-500 dark:bg-primary-300" />
           {labelA ?? a.processor ?? "System A"}
         </span>
-        <span className="radar-chart__legend-b">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-[3px] bg-accent-500" />
           {labelB ?? b.processor ?? "System B"}
         </span>
       </div>
       <button
         type="button"
-        className="btn-export btn-export--chart"
+        className="btn mx-auto mt-2 block px-3 py-1.5 text-xs"
         onClick={() =>
           exportPng(
             svgRef.current,
