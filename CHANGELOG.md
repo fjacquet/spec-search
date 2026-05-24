@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.8.0] - 2026-05-24
 
 ### Added
 
@@ -25,8 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `@layer components` for `panel`/`btn`/`field`/`num`). `index.css` is now
   `@theme` + layers + reset + a small chart-SVG-internal block only; the legacy
   CSS-variable bridge is gone.
+- Results table now uses full viewport width with roomier rows.
+- Bumped npm dependencies (React 19.2, Vite 8.0.10, Biome 2.4.13) and pinned
+  GitHub Actions versions (#15, #16).
+
+### Fixed
 
 - Dead `var(--primary)` reference in `.suite-btn` (hover/active color now works).
+- Unlayered CSS reset was overriding Tailwind padding/margin utilities; moved it
+  into `@layer base` so utilities apply (fixes collapsed table padding + layout).
 
 ## [1.7.2] - 2026-04-17
 
