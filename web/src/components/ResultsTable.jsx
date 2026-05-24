@@ -119,7 +119,7 @@ export default function ResultsTable({
                 {COLUMNS.map((col) => (
                   <td
                     key={col.key}
-                    className={`whitespace-nowrap border-b border-slate-200 px-3 py-2 dark:border-surface-700 max-[479px]:px-2 max-[479px]:py-1.5${col.numeric ? " num" : ""}`}
+                    className={`whitespace-nowrap border-b border-slate-200 px-3 py-2 dark:border-surface-700 max-[479px]:px-2 max-[479px]:py-1.5 ${col.numeric ? "num" : ""}`}
                   >
                     {col.key === "benchmark" ? (
                       <span title={row[col.key]}>

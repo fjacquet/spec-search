@@ -8,7 +8,7 @@ export default function ResultCard({ row, selected, disabled, onToggle }) {
   return (
     <button
       type="button"
-      className={`result-card${isSelected ? " result-card--selected" : ""}${disabled ? " result-card--disabled" : ""}`}
+      className={`result-card ${isSelected ? "result-card--selected" : ""} ${disabled ? "result-card--disabled" : ""}`}
       onClick={() => !disabled && onToggle(row)}
       aria-pressed={isSelected}
       disabled={disabled}

@@ -187,7 +187,7 @@ export default function FilterBar({
             )}
           </span>
           <span
-            className={`transition-transform${expanded ? "" : " -rotate-90"}`}
+            className={`transition-transform ${expanded ? "" : "-rotate-90"}`}
           >
             {"▼"}
           </span>
@@ -195,7 +195,7 @@ export default function FilterBar({
       )}
       {collapsible ? (
         <div
-          className={`flex flex-col gap-2 overflow-hidden transition-all${expanded ? " max-h-[600px] opacity-100" : " max-h-0 opacity-0"}`}
+          className={`flex flex-col gap-2 overflow-hidden transition-all ${expanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
           id="filter-content"
         >
           {filterContent}
