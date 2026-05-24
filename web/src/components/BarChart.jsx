@@ -90,11 +90,11 @@ export default function BarChart({ systems, labelA, labelB }) {
   const width = LABEL_WIDTH + MAX_BAR + 80;
 
   return (
-    <div className="bar-chart">
+    <div className="flex flex-col items-center justify-center">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
-        className="bar-chart__svg"
+        className="w-full max-w-[400px]"
         role="img"
         aria-label="Bar chart comparing system metrics"
       >
@@ -153,17 +153,19 @@ export default function BarChart({ systems, labelA, labelB }) {
           );
         })}
       </svg>
-      <div className="bar-chart__legend">
-        <span className="bar-chart__legend-a">
+      <div className="mt-3 flex gap-6 text-xs font-semibold max-[767px]:flex-col max-[767px]:items-center max-[767px]:gap-1">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-[3px] bg-primary-500 dark:bg-primary-300" />
           {labelA ?? a.processor ?? "System A"}
         </span>
-        <span className="bar-chart__legend-b">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-[3px] bg-accent-500" />
           {labelB ?? b.processor ?? "System B"}
         </span>
       </div>
       <button
         type="button"
-        className="btn-export btn-export--chart"
+        className="btn mx-auto mt-2 block px-3 py-1.5 text-xs"
         onClick={() =>
           exportPng(
             svgRef.current,

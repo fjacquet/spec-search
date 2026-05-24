@@ -66,33 +66,6 @@
   }
 }
 
-:root {
-  --bg: #ffffff;
-  --bg-secondary: #f8fafc; /* slate-50 */
-  --text: #0f172a; /* ink */
-  --text-secondary: #475569; /* inkMuted */
-  --border: #e2e8f0; /* slate-200 */
-  --primary: #3245b7; /* navy primary-500 (was undefined — bug fix) */
-  --accent: #3245b7; /* navy primary-500 */
-  --accent-hover: #2a3a9c; /* darker navy (hover) */
-  --row-hover: #eef2ff; /* primary-50 tint */
-  --success: #4aa342; /* util-low green */
-  --danger: #df202e; /* util-high red */
-}
-
-/* Dark mode for legacy (CSS-var) components — a later plan migrates these to
- * Tailwind `dark:` utilities; until then this var-override block drives it. */
-.dark {
-  --bg: #11161f; /* surface-800 */
-  --bg-secondary: #232933; /* surface-700 */
-  --text: #f1f5f9; /* slate-100 */
-  --text-secondary: #94a3b8; /* slate-400 */
-  --border: #232933; /* surface-700 */
-  --accent: #819ae9; /* navy primary-300 (reads on dark) */
-  --accent-hover: #b0c2f9; /* primary-200 */
-  --row-hover: #1e2540; /* dark navy tint */
-}
-
 html {
   color-scheme: light;
 }
@@ -106,172 +79,81 @@ html.dark {
   padding: 0;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
-}
-
-
-/* Radar Chart */
-.radar-chart {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.radar-chart__svg {
-  width: 100%;
-  max-width: 320px;
-}
-
-.radar-chart__ring {
+/* Chart SVG internals — on-screen styling for the live <svg> (the export path
+ * injects barCss()/radarCss() from tokens.js into a standalone clone). Concrete
+ * hex kept in sync with web/src/theme/tokens.js; .dark variants lighten the
+ * grid, labels, and the As-Is series for on-screen dark mode. Chart container
+ * and legend are Tailwind utilities in the components. */
+.radar-chart__ring,
+.radar-chart__axis {
   fill: none;
-  stroke: var(--border);
+  stroke: #e2e8f0; /* slate-200 */
+}
+.radar-chart__ring {
   stroke-width: 0.8;
 }
-
 .radar-chart__axis {
-  stroke: var(--border);
   stroke-width: 0.5;
   stroke-dasharray: 3 3;
 }
-
 .radar-chart__area-a {
   fill: rgba(50, 69, 183, 0.2);
-  stroke: #3245b7;
+  stroke: #3245b7; /* primary-500 */
   stroke-width: 2;
 }
-
 .radar-chart__area-b {
   fill: rgba(249, 185, 53, 0.2);
-  stroke: #f9b935;
+  stroke: #f9b935; /* accent-500 */
   stroke-width: 2;
 }
-
 .radar-chart__dot-a {
   fill: #3245b7;
 }
-
 .radar-chart__dot-b {
   fill: #f9b935;
 }
-
-.radar-chart__label {
-  font-size: 11px;
-  fill: var(--text-secondary);
+.radar-chart__label,
+.bar-chart__label,
+.bar-chart__value {
+  fill: #64748b; /* slate-500 */
   font-weight: 600;
 }
-
-.radar-chart__legend {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-/* legend swatches: keep in sync with tokens.js COLORS.primary500 (navy) / COLORS.accent500 (gold) */
-.radar-chart__legend-a::before,
-.radar-chart__legend-b::before {
-  content: "";
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  margin-right: 0.4rem;
-  vertical-align: middle;
-}
-
-.radar-chart__legend-a::before {
-  background: #3245b7;
-}
-
-.radar-chart__legend-b::before {
-  background: #f9b935;
-}
-
-/* Bar Chart */
-.bar-chart {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.bar-chart__svg {
-  width: 100%;
-  max-width: 400px;
-}
-
+.radar-chart__label,
 .bar-chart__label {
   font-size: 11px;
-  fill: var(--text-secondary);
-  font-weight: 600;
 }
-
+.bar-chart__value {
+  font-size: 10px;
+}
 .bar-chart__bar-a {
   fill: #3245b7;
   opacity: 0.85;
 }
-
 .bar-chart__bar-b {
   fill: #f9b935;
   opacity: 0.85;
 }
-
 .bar-chart__bar-a:hover,
 .bar-chart__bar-b:hover {
   opacity: 1;
 }
 
-.bar-chart__value {
-  font-size: 10px;
-  fill: var(--text-secondary);
-  font-weight: 600;
+.dark .radar-chart__ring,
+.dark .radar-chart__axis {
+  stroke: #232933; /* surface-700 */
 }
-
-.bar-chart__legend {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+.dark .radar-chart__label,
+.dark .bar-chart__label,
+.dark .bar-chart__value {
+  fill: #94a3b8; /* slate-400 */
 }
-
-.bar-chart__legend-a::before,
-.bar-chart__legend-b::before {
-  content: "";
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  margin-right: 0.4rem;
-  vertical-align: middle;
+.dark .radar-chart__area-a {
+  fill: rgba(129, 154, 233, 0.2);
+  stroke: #819ae9; /* primary-300 */
 }
-
-.bar-chart__legend-a::before {
-  background: #3245b7;
+.dark .radar-chart__dot-a {
+  fill: #819ae9;
 }
-
-.bar-chart__legend-b::before {
-  background: #f9b935;
+.dark .bar-chart__bar-a {
+  fill: #819ae9;
 }
-
-/* ── Responsive: Tablet (< 768px) ── */
-@media (max-width: 767px) {
-
-  .radar-chart__legend,
-  .bar-chart__legend {
-    flex-direction: column;
-    gap: 0.25rem;
-    align-items: center;
-  }
-
-
-
-
-
-}
-

@@ -110,11 +110,11 @@ export default function RadarChart({ systems, labelA, labelB }) {
   const polyB = pointsB.map((p) => `${p.x},${p.y}`).join(" ");
 
   return (
-    <div className="radar-chart">
+    <div className="flex flex-col items-center">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="radar-chart__svg"
+        className="w-full max-w-[320px]"
         role="img"
         aria-label="Radar chart comparing system metrics"
       >
@@ -188,17 +188,19 @@ export default function RadarChart({ systems, labelA, labelB }) {
           );
         })}
       </svg>
-      <div className="radar-chart__legend">
-        <span className="radar-chart__legend-a">
+      <div className="mt-3 flex gap-6 text-xs font-semibold max-[767px]:flex-col max-[767px]:items-center max-[767px]:gap-1">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-[3px] bg-primary-500 dark:bg-primary-300" />
           {labelA ?? a.processor ?? "System A"}
         </span>
-        <span className="radar-chart__legend-b">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-[3px] bg-accent-500" />
           {labelB ?? b.processor ?? "System B"}
         </span>
       </div>
       <button
         type="button"
-        className="btn-export btn-export--chart"
+        className="btn mx-auto mt-2 block px-3 py-1.5 text-xs"
         onClick={() =>
           exportPng(
             svgRef.current,
