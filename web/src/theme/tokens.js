@@ -18,6 +18,8 @@ export const COLORS = {
   utilHigh: "#df202e", //   oklch(58% .22 25)  — delta regression
   ink: "#0f172a",
   inkMuted: "#475569",
+  slate50: "#f8fafc", // slate-50
+  slate100: "#f1f5f9", // slate-100
   slate200: "#e2e8f0",
   slate400: "#94a3b8",
   slate500: "#64748b",
@@ -61,8 +63,8 @@ export const pptxColors = {
   deltaDown: bare(COLORS.utilHigh), // red
   ink: bare(COLORS.ink),
   inkMuted: bare(COLORS.inkMuted),
-  headerBg: "f1f5f9", // slate-100
-  altRow: "f8fafc", // slate-50
+  headerBg: bare(COLORS.slate100), // surface/header tint
+  altRow: bare(COLORS.slate50), // alt-row tint
   paper: bare(COLORS.paper),
   hairline: bare(COLORS.slate200),
 };
