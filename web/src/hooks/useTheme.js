@@ -58,7 +58,7 @@ export function useTheme() {
   }, [preference]);
 
   useEffect(() => {
-    if (preference !== "auto") return;
+    if (preference !== "auto" || typeof window === "undefined") return;
     const mq = window.matchMedia(MEDIA_QUERY);
     const handler = (e) => {
       const next = e.matches ? "dark" : "light";
