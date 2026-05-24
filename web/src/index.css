@@ -775,6 +775,7 @@ body {
   font-weight: 600;
 }
 
+/* legend swatches: keep in sync with tokens.js COLORS.primary500 (navy) / COLORS.accent500 (gold) */
 .radar-chart__legend-a::before,
 .radar-chart__legend-b::before {
   content: "";

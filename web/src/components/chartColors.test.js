@@ -23,4 +23,8 @@ describe("chart palette", () => {
     expect(css).toContain(COLORS.accent500);
     expect(css).not.toContain("#0d6efd");
   });
+
+  it("dark radar chart lightens As-Is to navy-300", () => {
+    expect(radarCss("dark")).toContain(COLORS.primary300);
+  });
 });

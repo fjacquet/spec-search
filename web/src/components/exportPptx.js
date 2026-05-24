@@ -35,6 +35,8 @@ const COLOR_INK = pptxColors.ink;
 const COLOR_INK_MUTED = pptxColors.inkMuted;
 const COLOR_HEADER_BG = pptxColors.headerBg;
 const COLOR_ALT_ROW = pptxColors.altRow;
+const COLOR_DELTA_UP = pptxColors.deltaUp;
+const COLOR_DELTA_DOWN = pptxColors.deltaDown;
 
 /** Delta = To-Be minus As-Is: positive = improvement. */
 function formatDelta(toBeVal, asIsVal) {
@@ -56,7 +58,7 @@ function formatCellValue(field, val, suite) {
 function deltaColor(toBeVal, asIsVal) {
   if (toBeVal == null || asIsVal == null || toBeVal === asIsVal)
     return COLOR_INK_MUTED;
-  return toBeVal > asIsVal ? pptxColors.deltaUp : pptxColors.deltaDown;
+  return toBeVal > asIsVal ? COLOR_DELTA_UP : COLOR_DELTA_DOWN;
 }
 
 /** systemA = As-Is, systemB = To-Be. Delta = To-Be minus As-Is. */
@@ -115,7 +117,7 @@ export function buildSlideData(systemA, systemB, suite) {
     const valAsIs = systemA[field.key];
     const valToBe = systemB[field.key];
     const isAlt = i % 2 === 1;
-    const rowFill = isAlt ? COLOR_ALT_ROW : "FFFFFF";
+    const rowFill = isAlt ? COLOR_ALT_ROW : pptxColors.paper;
 
     const deltaText = field.numeric ? formatDelta(valToBe, valAsIs) : "\u2014";
     const deltaCellColor = field.numeric
@@ -201,7 +203,7 @@ export async function exportToPptx({
   pptx.title = title;
 
   const slide = pptx.addSlide();
-  slide.bkgd = "FFFFFF";
+  slide.bkgd = pptxColors.paper;
 
   // Title
   slide.addText(title, {
