@@ -52,13 +52,15 @@ Package layout: `src/spec_search_mcp/` with hatchling build system.
 
 ## Web Application (`web/`)
 
-A client-side React 19 app built with Vite 6:
+A client-side React 19 app built with Vite 8:
 - Fetches `results.json` and `facets.json` on page load
 - Filters/sorts 46K rows in-browser using `Array.filter()` + `Array.sort()` (<50ms)
 - Renders 50 rows per page with pagination
 - Deployed as static files on GitHub Pages at `/spec-search/`
 
 Web theming = Tailwind v4 `@theme` tokens (Midnight Executive), single source of truth mirrored to `web/src/theme/tokens.js` for charts + PPTX; see ADR-006.
+
+Installable PWA via `vite-plugin-pwa` (Workbox `generateSW`, auto-update): the app shell is precached and benchmark `data/*.json` is runtime-cached `NetworkFirst` so the app works offline after first use; see ADR-007.
 
 ## Deployment
 
