@@ -1,14 +1,19 @@
 # Data Refresh Guide
 
-How to update spec-search with the latest SPEC CPU2017 results from the official website.
+How to update spec-search with the latest SPEC benchmark results from the official website.
 
 ## Data Source
 
-SPEC publishes all CPU2017 benchmark results as a downloadable CSV:
+SPEC publishes each suite's results as a downloadable CSV dump. Replace the
+`conf=` value per suite:
 
-**URL**: `https://www.spec.org/cgi-bin/osgresults?conf=cpu2017`
+| Suite | Dump URL | Saved to |
+|-------|----------|----------|
+| CPU2017 | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2017` | `datas/cpu2017-results.csv` |
+| CPU2026 | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2026;op=dump;format=csvdump` | `datas/cpu2026-results.csv` |
+| JBB2015 | `https://www.spec.org/cgi-bin/osgresults?conf=jbb2015` | `datas/jbb2015-results.csv` |
 
-Click **"Dump All Records As CSV"** at the top of the page to download the full dataset (~47MB, ~46K rows).
+Click **"Dump All Records As CSV"** at the top of the page to download the full dataset.
 
 ## Refresh Steps
 
@@ -49,10 +54,13 @@ flowchart LR
 
 ### 3. Update the MCP server's bundled data
 
-The MCP server ships its own gzipped copy of the CSV so it works standalone without the repo:
+The MCP server ships its own gzipped copy of the CSV so it works standalone without the repo.
+
+Run this for each suite whose CSV changed (swap `cpu2017` for `cpu2026` /
+`jbb2015` as needed):
 
 ```bash
-gzip -c datas/cpu2017-results.csv > mcp_server/src/spec_search_mcp/data/cpu2017-results.csv.gz
+gzip -c datas/cpu2026-results.csv > mcp_server/src/spec_search_mcp/data/cpu2026-results.csv.gz
 ```
 
 ### 4. Verify

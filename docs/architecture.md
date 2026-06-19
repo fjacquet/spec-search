@@ -6,18 +6,25 @@ spec-search is a three-component system: a data pipeline, a web application, and
 
 ```mermaid
 flowchart TD
-    CSV["cpu2017-results.csv\n(47MB, 46K rows)"]
+    CSV17["cpu2017-results.csv\n(47MB, 46K rows)"]
+    CSV26["cpu2026-results.csv\n(272KB, 279 rows)"]
+    CSVJBB["jbb2015-results.csv"]
 
-    CSV --> Pipeline["scripts/convert_csv.py"]
-    CSV --> MCP["MCP Server\nFastMCP + Pandas"]
+    CSV17 --> Pipeline["scripts/convert_csv.py\n(iterates SUITES registry)"]
+    CSV26 --> Pipeline
+    CSVJBB --> Pipeline
+    CSV17 --> MCP["MCP Server\nFastMCP + Pandas"]
+    CSV26 --> MCP
+    CSVJBB --> MCP
 
-    Pipeline --> results["results.json"]
-    Pipeline --> facets["facets.json"]
-    Pipeline --> processors["processors/*.json"]
+    Pipeline --> results17["web/public/data/cpu2017/\nresults.json + facets.json\n+ processors/*.json"]
+    Pipeline --> results26["web/public/data/cpu2026/\nresults.json + facets.json\n+ processors/*.json"]
+    Pipeline --> resultsjbb["web/public/data/jbb2015/\nresults.json + facets.json"]
 
-    results --> WebApp["React Web App\n(Vite build)"]
-    facets --> WebApp
-    processors --> API["Static JSON API\n(cluster-sizer)"]
+    results17 --> WebApp["React Web App\n(Vite build)"]
+    results26 --> WebApp
+    resultsjbb --> WebApp
+    results17 --> API["Static JSON API\n(cluster-sizer)"]
 
     WebApp --> GHPages["GitHub Pages"]
     API --> GHPages
@@ -27,11 +34,13 @@ flowchart TD
 
 ## Data Pipeline (`scripts/convert_csv.py`)
 
-Reads the source CSV and produces three outputs:
+The pipeline iterates a `SUITES` registry, producing one `web/public/data/<suite>/` output directory per suite. Currently three suites are registered: `cpu2017`, `cpu2026`, and `jbb2015`. CPU2017 is the default. CPU2026 additionally carries energy-efficiency metrics (`energyPeakResult`, `energyBaseResult`) and compiler/cache/storage enrichment fields; energy `0` values are normalized to `null` in the data layer.
 
-1. **results.json** — Full dataset (46K records, 16 fields each) for the web search UI
-2. **facets.json** — Unique values for dropdown filters (benchmarks, vendors, processors)
-3. **processors/*.json** — One file per unique processor (623 files) for lightweight API lookups
+Per suite, the pipeline produces three outputs:
+
+1. **results.json** — Full dataset for the web search UI
+2. **facets.json** — Unique values for dropdown filters (benchmarks, vendors, processors, and suite-specific facets such as `compilerCategories` for cpu2026)
+3. **processors/*.json** — One file per unique processor for lightweight API lookups
 
 The pipeline runs at build time (CI) and locally via `make data`. It uses only Python stdlib (csv, json).
 

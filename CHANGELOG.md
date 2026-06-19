@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- SPEC CPU2026 benchmark suite as a third selectable suite alongside CPU2017
+  and JBB2015. Surfaces CPU2026's energy-efficiency metrics (Energy Peak/Base,
+  sortable; the `0` "not measured" sentinel is normalized to null) plus
+  cache-level, compiler, storage, and filesystem enrichment fields. CPU2017
+  remains the default. See ADR-008.
+
 ## [1.9.1] - 2026-05-24
 
 ### Changed

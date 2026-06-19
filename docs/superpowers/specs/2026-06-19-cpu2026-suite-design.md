@@ -151,7 +151,10 @@ registry directly — **no component code changes**, only the config entry.
 - **`Peak Result = 0`** (base-only runs, e.g. the Apple M5 Pro row) — sorts to
   the bottom under the existing `peakResult` desc + `na_position="last"`.
   Acceptable; documented behavior.
-- **Energy `0`** = not measured → web renders "—"; MCP returns `0` as-is.
+- **Energy `0`** = not measured → normalized to `null` in the data layer
+  (pipeline `null_if_zero` + MCP `mask`), so the web renders "—" via the
+  existing `?? "—"` idiom and energy sorts unmeasured rows last. No frontend
+  rendering change needed.
 - **Cross-suite energy sort** — the `SORT_COLUMNS` guard falls back to
   `peakResult` when an `energy_*` sort is requested against a suite (cpu2017)
   that lacks those columns, preventing a pandas `KeyError`.
