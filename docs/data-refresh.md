@@ -19,11 +19,13 @@ Click **"Dump All Records As CSV"** at the top of the page to download the full 
 
 ### 1. Download the CSV
 
-Save the downloaded file to the project root, replacing the existing source:
+Save the downloaded file to the project root using the filename from the table above:
 
 ```
-datas/cpu2017-results.csv
+datas/<suite>-results.csv
 ```
+
+For example: `datas/cpu2017-results.csv`, `datas/cpu2026-results.csv`, or `datas/jbb2015-results.csv`.
 
 ### 2. Regenerate web app data and rebuild
 
@@ -47,10 +49,10 @@ flowchart LR
 
 | Output | Location | Description |
 |--------|----------|-------------|
-| `results.json` | `web/public/data/` | Full dataset (16 fields per record) |
-| `facets.json` | `web/public/data/` | Unique benchmarks, vendors, processors for filter dropdowns |
-| `processors/*.json` | `web/public/data/processors/` | One file per processor for static API |
-| `index.json` | `web/public/data/processors/` | Processor name → slug mapping |
+| `results.json` | `web/public/data/<suite>/` | Full dataset (16 fields per record) |
+| `facets.json` | `web/public/data/<suite>/` | Unique benchmarks, vendors, processors for filter dropdowns |
+| `processors/*.json` | `web/public/data/<suite>/processors/` | One file per processor for static API |
+| `index.json` | `web/public/data/<suite>/processors/` | Processor name → slug mapping |
 
 ### 3. Update the MCP server's bundled data
 
