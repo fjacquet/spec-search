@@ -49,7 +49,7 @@ flowchart LR
 
 | Output | Location | Description |
 |--------|----------|-------------|
-| `results.json` | `web/public/data/<suite>/` | Full dataset (16 fields per record) |
+| `results.json` | `web/public/data/<suite>/` | Full dataset (fields vary by suite) |
 | `facets.json` | `web/public/data/<suite>/` | Unique benchmarks, vendors, processors for filter dropdowns |
 | `processors/*.json` | `web/public/data/<suite>/processors/` | One file per processor for static API |
 | `index.json` | `web/public/data/<suite>/processors/` | Processor name → slug mapping |
