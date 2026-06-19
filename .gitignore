@@ -13,6 +13,7 @@ web/dist/
 # Generated data (rebuilt from CSV by scripts/convert_csv.py)
 web/public/data/cpu2017/
 web/public/data/jbb2015/
+web/public/data/cpu2026/
 
 # MCP server venv and build artifacts
 mcp_server/.venv/
