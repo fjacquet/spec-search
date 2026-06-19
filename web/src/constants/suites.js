@@ -41,6 +41,39 @@ export const SUITES = {
     ],
     specBaseUrl: "https://www.spec.org",
   },
+  cpu2026: {
+    id: "cpu2026",
+    name: "SPEC CPU2026",
+    peakLabel: "Peak",
+    baseLabel: "Base",
+    peakScoreLabel: "Peak Score",
+    baseScoreLabel: "Base Score",
+    benchmarkLabels: {
+      CINT2026: "Integer Per-Core",
+      CFP2026: "FP Per-Core",
+      CINT2026rate: "Integer Multi-Core",
+      CFP2026rate: "FP Multi-Core",
+    },
+    extraColumns: [
+      { key: "energyPeakResult", label: "Energy Peak", numeric: true },
+      { key: "energyBaseResult", label: "Energy Base", numeric: true },
+      { key: "l3Cache", label: "L3 Cache" },
+      { key: "compilerCategory", label: "Compiler Cat." },
+    ],
+    extraComparisonFields: [
+      { key: "energyPeakResult", label: "Energy Peak", numeric: true },
+      { key: "energyBaseResult", label: "Energy Base", numeric: true },
+      { key: "l1Cache", label: "L1 Cache" },
+      { key: "l2Cache", label: "L2 Cache" },
+      { key: "l3Cache", label: "L3 Cache" },
+      { key: "compiler", label: "Compiler" },
+      { key: "compilerCategory", label: "Compiler Category" },
+      { key: "storage", label: "Storage" },
+      { key: "fileSystem", label: "File System" },
+      { key: "swAvail", label: "SW Avail" },
+    ],
+    specBaseUrl: "https://www.spec.org",
+  },
 };
 
 export const SUITE_IDS = Object.keys(SUITES);
