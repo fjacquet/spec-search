@@ -21,7 +21,7 @@ Click **"Dump All Records As CSV"** at the top of the page to download the full 
 
 Save the downloaded file to the project root using the filename from the table above:
 
-```
+```text
 datas/<suite>-results.csv
 ```
 
