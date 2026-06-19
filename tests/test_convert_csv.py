@@ -202,6 +202,72 @@ class TestProcessRowJbb2015:
         assert result is None
 
 
+# --- process_row (CPU2026) ---
+
+
+class TestProcessRowCpu2026:
+    def _make_row(self, **overrides):
+        """Create a minimal valid CPU2026 CSV row dict."""
+        base = {
+            "Benchmark": "CINT2026rate",
+            "Hardware Vendor\t": "Dell Inc.",
+            "System": "PowerEdge M7725",
+            "Peak Result": "8.05",
+            "Base Result": "8.05",
+            "Energy Peak Result": "0",
+            "Energy Base Result": "0",
+            "# Cores": "256",
+            "# Chips ": "2",
+            "# Enabled Threads Per Core": "2",
+            "Processor ": "AMD EPYC 9755",
+            "Processor MHz": "2700",
+            "1st Level Cache": "32 KB I + 48 KB D on chip per core",
+            "2nd Level Cache": "1 MB I+D on chip per core",
+            "3rd Level Cache": "512 MB I+D on chip per chip",
+            "Memory": "1536 GB",
+            "Storage": "tmpfs",
+            "Operating System": "Ubuntu 24.04.1 LTS",
+            "File System": "tmpfs",
+            "Compiler": "C/C++: Version 5.1.0 of AOCC",
+            "Compiler Category": "Vendor",
+            "HW Avail": "Jan-2025",
+            "SW Avail": "Jan-2026",
+            "Test Date": "Feb-2026",
+            "Published": "May-2026",
+            "Disclosures": '<A HREF="/cpu2026/results/res2026q2/cpu2026-20260210-00034.html">HTML</A>',
+        }
+        base.update(overrides)
+        return base
+
+    def test_basic_row(self):
+        result = process_row(self._make_row(), SUITES["cpu2026"])
+        assert result["benchmark"] == "CINT2026rate"
+        assert result["vendor"] == "Dell Inc."
+        assert result["peakResult"] == 8.05
+        assert result["cores"] == 256
+        assert result["processor"] == "AMD EPYC 9755"
+        assert result["compilerCategory"] == "Vendor"
+        assert result["l3Cache"] == "512 MB I+D on chip per chip"
+        assert result["resultUrl"] == "/cpu2026/results/res2026q2/cpu2026-20260210-00034.html"
+
+    def test_energy_zero_becomes_none(self):
+        result = process_row(self._make_row(), SUITES["cpu2026"])
+        assert result["energyPeakResult"] is None
+        assert result["energyBaseResult"] is None
+
+    def test_energy_nonzero_parsed(self):
+        row = self._make_row(**{"Energy Peak Result": "1.5", "Energy Base Result": "2"})
+        result = process_row(row, SUITES["cpu2026"])
+        assert result["energyPeakResult"] == 1.5
+        assert result["energyBaseResult"] == 2
+
+    def test_skips_row_without_processor(self):
+        row = self._make_row()
+        row["Processor "] = ""
+        result = process_row(row, SUITES["cpu2026"])
+        assert result is None
+
+
 # --- Integration: full pipeline on sample CSV ---
 
 
@@ -248,6 +314,21 @@ class TestPipelineIntegration:
         )
         (datas_dir / "jbb2015-results.csv").write_text(jbb_content, encoding="utf-8-sig")
 
+        cpu2026_content = (
+            'Benchmark,"Hardware Vendor\t",System,"Peak Result","Base Result",'
+            '"Energy Peak Result","Energy Base Result","# Cores","# Chips ",'
+            '"# Enabled Threads Per Core","Processor ","Processor MHz",'
+            '"1st Level Cache","2nd Level Cache","3rd Level Cache",Memory,Storage,'
+            '"Operating System","File System",Compiler,"Compiler Category",'
+            '"HW Avail","SW Avail","Test Date",Published,Disclosures\r\n'
+            'CINT2026rate,"Dell Inc.","PowerEdge M7725",8.05,8.05,0,0,256,2,2,'
+            '"AMD EPYC 9755",2700,"32 KB","1 MB","512 MB","1536 GB",tmpfs,'
+            '"Ubuntu 24.04","tmpfs","AOCC 5.1.0",Vendor,"Jan-2025","Jan-2026",'
+            '"Feb-2026","May-2026",'
+            '"<A HREF=""/cpu2026/results/res2026q2/cpu2026-20260210-00034.html"">HTML</A>"\r\n'
+        )
+        (datas_dir / "cpu2026-results.csv").write_text(cpu2026_content, encoding="utf-8-sig")
+
         return datas_dir
 
     def test_full_pipeline(self, sample_csvs, tmp_path, monkeypatch):
@@ -282,3 +363,17 @@ class TestPipelineIntegration:
         assert "JBB2015MULTI" in jbb_facets["benchmarks"]
         assert "jvmVendors" in jbb_facets
         assert "Oracle" in jbb_facets["jvmVendors"]
+
+        # Check CPU2026 results
+        cpu2026_results = json.loads((output_dir / "cpu2026" / "results.json").read_text())
+        assert len(cpu2026_results) == 1
+        assert cpu2026_results[0]["benchmark"] == "CINT2026rate"
+        assert cpu2026_results[0]["peakResult"] == 8.05
+        assert cpu2026_results[0]["energyPeakResult"] is None
+        assert cpu2026_results[0]["compilerCategory"] == "Vendor"
+        assert cpu2026_results[0]["resultUrl"] == "/cpu2026/results/res2026q2/cpu2026-20260210-00034.html"
+
+        cpu2026_facets = json.loads((output_dir / "cpu2026" / "facets.json").read_text())
+        assert "CINT2026rate" in cpu2026_facets["benchmarks"]
+        assert "compilerCategories" in cpu2026_facets
+        assert "Vendor" in cpu2026_facets["compilerCategories"]
