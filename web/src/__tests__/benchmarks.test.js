@@ -58,6 +58,23 @@ describe("suites config", () => {
       "nodes",
     ]);
   });
+
+  it("has a cpu2026 suite", () => {
+    expect(SUITES.cpu2026).toBeDefined();
+    expect(getSuite("cpu2026").name).toBe("SPEC CPU2026");
+  });
+
+  it("cpu2026 has correct benchmark labels", () => {
+    const c = getSuite("cpu2026");
+    expect(c.benchmarkLabels.CINT2026).toBe("Integer Per-Core");
+    expect(c.benchmarkLabels.CFP2026rate).toBe("FP Multi-Core");
+  });
+
+  it("cpu2026 exposes energy extra columns", () => {
+    const keys = getSuite("cpu2026").extraColumns.map((col) => col.key);
+    expect(keys).toContain("energyPeakResult");
+    expect(keys).toContain("energyBaseResult");
+  });
 });
 
 describe("suiteBenchmarkLabel", () => {
@@ -67,5 +84,11 @@ describe("suiteBenchmarkLabel", () => {
 
   it("resolves JBB2015 labels with suite param", () => {
     expect(suiteBenchmarkLabel("JBB2015MULTI", "jbb2015")).toBe("Multi-JVM");
+  });
+
+  it("resolves CPU2026 labels with suite param", () => {
+    expect(suiteBenchmarkLabel("CINT2026rate", "cpu2026")).toBe(
+      "Integer Multi-Core",
+    );
   });
 });

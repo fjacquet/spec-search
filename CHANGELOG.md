@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- SPEC CPU2026 benchmark suite as a third selectable suite alongside CPU2017
+  and JBB2015. Surfaces CPU2026's energy-efficiency metrics (Energy Peak/Base,
+  sortable; the `0` "not measured" sentinel is normalized to null) plus
+  cache-level, compiler, storage, and filesystem enrichment fields. CPU2017
+  remains the default. See ADR-008.
+
+### Fixed
+
+- The MCP server wheel now bundles the CPU2026 data file
+  (`cpu2026-results.csv.gz`); it was missing from the Hatchling
+  `force-include` list, so a pip-installed package would have raised
+  `FileNotFoundError` for `suite="cpu2026"`.
+
+### Security
+
+- Bumped transitive dependencies flagged by `pip-audit`: `starlette` ≥1.3.1,
+  `python-multipart` ≥0.0.31, and `cryptography` ≥48.0.1 (FastMCP runtime
+  deps), plus `pip` ≥26.1.2 in the dev/audit tooling.
+
 ## [1.9.1] - 2026-05-24
 
 ### Changed

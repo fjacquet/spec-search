@@ -1,4 +1,4 @@
-"""Load and cache SPEC benchmark data from CSV (CPU2017 and JBB2015)."""
+"""Load and cache SPEC benchmark data from CSV (CPU2017, CPU2026, and JBB2015)."""
 
 import gzip
 import importlib.resources
@@ -12,10 +12,11 @@ _CSV_OVERRIDE = os.environ.get("SPEC_SEARCH_CSV_PATH")
 
 _dfs: dict[str, pd.DataFrame] = {}
 
-VALID_SUITES = ["cpu2017", "jbb2015"]
+VALID_SUITES = ["cpu2017", "jbb2015", "cpu2026"]
 
 CPU2017_URL_PATTERN = re.compile(r'HREF="(/cpu2017/results/[^"]+\.html)"')
 JBB2015_URL_PATTERN = re.compile(r'(/jbb2015/results/[^"]+\.html)')
+CPU2026_URL_PATTERN = re.compile(r'HREF="(/cpu2026/results/[^"]+\.html)"')
 
 SUITE_CONFIGS = {
     "cpu2017": {
@@ -68,6 +69,61 @@ SUITE_CONFIGS = {
         "url_pattern": JBB2015_URL_PATTERN,
         "numeric_cols": ["peakResult", "baseResult", "cores", "chips", "threadsPerCore", "processorMhz", "nodes"],
         "extra_cols": ["jvm", "jvmVendor", "nodes"],
+    },
+    "cpu2026": {
+        "csv_filename": "cpu2026-results.csv",
+        "rename_map": {
+            "Benchmark": "benchmark",
+            "Hardware Vendor": "vendor",
+            "System": "system",
+            "Peak Result": "peakResult",
+            "Base Result": "baseResult",
+            "Energy Peak Result": "energyPeakResult",
+            "Energy Base Result": "energyBaseResult",
+            "# Cores": "cores",
+            "# Chips": "chips",
+            "# Enabled Threads Per Core": "threadsPerCore",
+            "Processor": "processor",
+            "Processor MHz": "processorMhz",
+            "1st Level Cache": "l1Cache",
+            "2nd Level Cache": "l2Cache",
+            "3rd Level Cache": "l3Cache",
+            "Memory": "memory",
+            "Storage": "storage",
+            "Operating System": "os",
+            "File System": "fileSystem",
+            "Compiler": "compiler",
+            "Compiler Category": "compilerCategory",
+            "HW Avail": "hwAvail",
+            "SW Avail": "swAvail",
+            "Test Date": "testDate",
+            "Published": "published",
+        },
+        "url_column": "Disclosures",
+        "url_pattern": CPU2026_URL_PATTERN,
+        "numeric_cols": [
+            "peakResult",
+            "baseResult",
+            "energyPeakResult",
+            "energyBaseResult",
+            "cores",
+            "chips",
+            "threadsPerCore",
+            "processorMhz",
+        ],
+        "null_if_zero": ["energyPeakResult", "energyBaseResult"],
+        "extra_cols": [
+            "energyPeakResult",
+            "energyBaseResult",
+            "l1Cache",
+            "l2Cache",
+            "l3Cache",
+            "storage",
+            "fileSystem",
+            "compiler",
+            "compilerCategory",
+            "swAvail",
+        ],
     },
 }
 
@@ -143,6 +199,11 @@ def load_data(suite: str = "cpu2017") -> pd.DataFrame:
     for col in config["numeric_cols"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Normalize sentinel zeros (e.g. unmeasured energy) to NaN
+    for col in config.get("null_if_zero", []):
+        if col in df.columns:
+            df[col] = df[col].mask(df[col] == 0)
 
     # Strip string columns
     for col in df.select_dtypes(include="object").columns:

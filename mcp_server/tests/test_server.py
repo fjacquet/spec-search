@@ -83,6 +83,67 @@ CPU2017_DATA = pd.DataFrame(
     ]
 )
 
+CPU2026_DATA = pd.DataFrame(
+    [
+        {
+            "benchmark": "CINT2026rate",
+            "vendor": "Dell Inc.",
+            "system": "PowerEdge M7725",
+            "peakResult": 8.05,
+            "baseResult": 8.05,
+            "energyPeakResult": None,
+            "energyBaseResult": None,
+            "cores": 256,
+            "chips": 2,
+            "threadsPerCore": 2,
+            "processor": "AMD EPYC 9755",
+            "processorMhz": 2700,
+            "l1Cache": "32 KB",
+            "l2Cache": "1 MB",
+            "l3Cache": "512 MB",
+            "memory": "1536 GB",
+            "storage": "tmpfs",
+            "os": "Ubuntu 24.04.1 LTS",
+            "fileSystem": "tmpfs",
+            "compiler": "AOCC 5.1.0",
+            "compilerCategory": "Vendor",
+            "hwAvail": "Jan-2025",
+            "swAvail": "Jan-2026",
+            "testDate": "Feb-2026",
+            "published": "May-2026",
+            "resultUrl": "/cpu2026/results/res2026q2/cpu2026-20260210-00034.html",
+        },
+        {
+            "benchmark": "CINT2026rate",
+            "vendor": "Cisco Systems",
+            "system": "UCS X410c M8",
+            "peakResult": 6.89,
+            "baseResult": 6.82,
+            "energyPeakResult": 1.5,
+            "energyBaseResult": 1.4,
+            "cores": 344,
+            "chips": 4,
+            "threadsPerCore": 2,
+            "processor": "Intel Xeon 6788P",
+            "processorMhz": 2000,
+            "l1Cache": "64 KB",
+            "l2Cache": "2 MB",
+            "l3Cache": "336 MB",
+            "memory": "2 TB",
+            "storage": "btrfs",
+            "os": "SUSE Linux Enterprise Server 15 SP6",
+            "fileSystem": "btrfs",
+            "compiler": "Intel oneAPI 2026.0",
+            "compilerCategory": "Vendor",
+            "hwAvail": "May-2025",
+            "swAvail": "Apr-2026",
+            "testDate": "May-2026",
+            "published": "Jun-2026",
+            "resultUrl": "/cpu2026/results/res2026q2/cpu2026-20260602-00288.html",
+        },
+    ]
+)
+
 JBB2015_DATA = pd.DataFrame(
     [
         {
@@ -133,8 +194,12 @@ JBB2015_DATA = pd.DataFrame(
 
 @pytest.fixture(autouse=True)
 def mock_data(monkeypatch):
-    """Replace load_data cache with mock DataFrames for both suites."""
-    monkeypatch.setattr(data_loader, "_dfs", {"cpu2017": CPU2017_DATA, "jbb2015": JBB2015_DATA})
+    """Replace load_data cache with mock DataFrames for all suites."""
+    monkeypatch.setattr(
+        data_loader,
+        "_dfs",
+        {"cpu2017": CPU2017_DATA, "jbb2015": JBB2015_DATA, "cpu2026": CPU2026_DATA},
+    )
 
 
 # --- search_benchmarks (CPU2017) ---
@@ -333,3 +398,32 @@ class TestGetStatistics:
         vendors = [r["vendor"] for r in results]
         assert "ASUSTeK Computer Inc." in vendors
         assert "Dell Inc." in vendors
+
+
+# --- search_benchmarks (CPU2026) ---
+
+
+class TestSearchBenchmarksCpu2026:
+    def test_no_filters(self):
+        results = search_benchmarks(suite="cpu2026")
+        assert len(results) == 2
+
+    def test_benchmark_label(self):
+        results = search_benchmarks(suite="cpu2026", benchmark="CINT2026rate")
+        assert all(r["benchmarkLabel"] == "Integer Multi-Core" for r in results)
+
+    def test_enrichment_fields_present(self):
+        results = search_benchmarks(suite="cpu2026", processor="EPYC")
+        assert results[0]["compilerCategory"] == "Vendor"
+        assert results[0]["l3Cache"] == "512 MB"
+        assert results[0]["energyPeakResult"] is None
+
+    def test_sort_by_energy_peak(self):
+        results = search_benchmarks(suite="cpu2026", sort_by="energy_peak", sort_order="desc")
+        # Cisco (1.5) ranks above Dell (None); None sorts last
+        assert results[0]["processor"] == "Intel Xeon 6788P"
+
+    def test_energy_sort_falls_back_on_cpu2017(self):
+        # cpu2017 has no energy columns; sort must not raise and falls back to peak
+        results = search_benchmarks(suite="cpu2017", sort_by="energy_peak")
+        assert len(results) == 4

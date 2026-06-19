@@ -1,11 +1,18 @@
 [project]
 name = "spec-search-mcp"
 version = "1.0.0"
-description = "MCP server for SPEC benchmark search (CPU2017 and JBB2015)"
+description = "MCP server for SPEC benchmark search (CPU2017, CPU2026, and JBB2015)"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
-dependencies = ["fastmcp>=2.0", "pandas>=2.0"]
+dependencies = [
+    "fastmcp>=2.0",
+    "pandas>=2.0",
+    # Security floors for fastmcp's runtime transitives (see CHANGELOG / advisories).
+    "starlette>=1.3.1",
+    "python-multipart>=0.0.31",
+    "cryptography>=48.0.1",
+]
 
 [project.scripts]
 spec-search-mcp = "spec_search_mcp.server:main"
@@ -19,10 +26,11 @@ packages = ["src/spec_search_mcp"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "src/spec_search_mcp/data/cpu2017-results.csv.gz" = "spec_search_mcp/data/cpu2017-results.csv.gz"
+"src/spec_search_mcp/data/cpu2026-results.csv.gz" = "spec_search_mcp/data/cpu2026-results.csv.gz"
 "src/spec_search_mcp/data/jbb2015-results.csv.gz" = "spec_search_mcp/data/jbb2015-results.csv.gz"
 
 [dependency-groups]
-dev = ["pytest>=8.0", "ruff>=0.8", "pip-audit>=2.7", "cyclonedx-bom>=5.0"]
+dev = ["pytest>=8.0", "ruff>=0.8", "pip-audit>=2.7", "cyclonedx-bom>=5.0", "pip>=26.1.2"]
 
 [tool.ruff]
 target-version = "py312"

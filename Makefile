@@ -3,7 +3,7 @@
 all: lint test build
 
 clean:
-	rm -rf web/dist web/public/data/cpu2017 web/public/data/jbb2015
+	rm -rf web/dist web/public/data/cpu2017 web/public/data/jbb2015 web/public/data/cpu2026
 
 data:
 	uv run python scripts/convert_csv.py

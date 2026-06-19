@@ -72,6 +72,51 @@ SUITES = {
         "numeric_fields": {"peakResult", "baseResult", "cores", "chips", "threadsPerCore", "processorMhz", "nodes"},
         "extra_facet_fields": {"jvmVendors": "jvmVendor"},
     },
+    "cpu2026": {
+        "csv_filename": "cpu2026-results.csv",
+        "column_map": {
+            "Benchmark": "benchmark",
+            "Hardware Vendor": "vendor",
+            "System": "system",
+            "Peak Result": "peakResult",
+            "Base Result": "baseResult",
+            "Energy Peak Result": "energyPeakResult",
+            "Energy Base Result": "energyBaseResult",
+            "# Cores": "cores",
+            "# Chips": "chips",
+            "# Enabled Threads Per Core": "threadsPerCore",
+            "Processor": "processor",
+            "Processor MHz": "processorMhz",
+            "1st Level Cache": "l1Cache",
+            "2nd Level Cache": "l2Cache",
+            "3rd Level Cache": "l3Cache",
+            "Memory": "memory",
+            "Storage": "storage",
+            "Operating System": "os",
+            "File System": "fileSystem",
+            "Compiler": "compiler",
+            "Compiler Category": "compilerCategory",
+            "HW Avail": "hwAvail",
+            "SW Avail": "swAvail",
+            "Test Date": "testDate",
+            "Published": "published",
+            "Disclosures": "_disclosures",
+        },
+        "url_pattern": re.compile(r'HREF="(/cpu2026/results/[^"]+\.html)"'),
+        "url_source_column": "Disclosures",
+        "numeric_fields": {
+            "peakResult",
+            "baseResult",
+            "energyPeakResult",
+            "energyBaseResult",
+            "cores",
+            "chips",
+            "threadsPerCore",
+            "processorMhz",
+        },
+        "null_if_zero": {"energyPeakResult", "energyBaseResult"},
+        "extra_facet_fields": {"compilerCategories": "compilerCategory"},
+    },
 }
 
 
@@ -128,7 +173,10 @@ def process_row(raw_row: dict, suite_config: dict) -> dict | None:
             continue
 
         if json_key in numeric_fields:
-            record[json_key] = parse_numeric(value)
+            parsed = parse_numeric(value)
+            if parsed == 0 and json_key in suite_config.get("null_if_zero", set()):
+                parsed = None
+            record[json_key] = parsed
         else:
             record[json_key] = value if value else None
 

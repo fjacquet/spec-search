@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""FastMCP server for SPEC benchmark search (CPU2017 and JBB2015)."""
+"""FastMCP server for SPEC benchmark search (CPU2017, CPU2026, and JBB2015)."""
+
+import math
 
 from fastmcp import FastMCP
 
@@ -8,11 +10,12 @@ from spec_search_mcp.data_loader import VALID_SUITES, load_data
 mcp = FastMCP(
     name="spec-search",
     instructions=(
-        "Search SPEC benchmark results (CPU2017 and JBB2015). "
-        "All tools accept a 'suite' parameter: 'cpu2017' (default) or 'jbb2015'. "
+        "Search SPEC benchmark results (CPU2017, CPU2026, and JBB2015). "
+        "All tools accept a 'suite' parameter: 'cpu2017' (default), 'cpu2026', or 'jbb2015'. "
         "Use search_benchmarks for filtered queries, "
         "get_top_results for rankings, compare_processors for side-by-side comparison, "
-        "and get_statistics for aggregated data."
+        "and get_statistics for aggregated data. CPU2026 adds energy metrics "
+        "(sort_by 'energy_peak' or 'energy_base')."
     ),
 )
 
@@ -22,6 +25,11 @@ BENCHMARK_LABELS = {
     "CFP2017": "FP Per-Core",
     "CINT2017rate": "Integer Multi-Core",
     "CFP2017rate": "FP Multi-Core",
+    # CPU2026
+    "CINT2026": "Integer Per-Core",
+    "CFP2026": "FP Per-Core",
+    "CINT2026rate": "Integer Multi-Core",
+    "CFP2026rate": "FP Multi-Core",
     # JBB2015
     "JBB2015MULTI": "Multi-JVM",
     "JBB2015COMP": "Composite",
@@ -33,6 +41,8 @@ SORT_COLUMNS = {
     "base_result": "baseResult",
     "cores": "cores",
     "processor_mhz": "processorMhz",
+    "energy_peak": "energyPeakResult",
+    "energy_base": "energyBaseResult",
 }
 
 
@@ -44,9 +54,17 @@ def _validate_suite(suite: str) -> str:
     return s
 
 
+def _nan_to_none(value):
+    """Convert float NaN to None; leave all other values unchanged."""
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
+
+
 def _df_to_records(df, limit: int = 20) -> list[dict]:
-    """Convert DataFrame rows to list of dicts, dropping NaN."""
-    records = df.head(limit).where(df.notna(), None).to_dict(orient="records")
+    """Convert DataFrame rows to list of dicts, replacing NaN with None."""
+    raw = df.head(limit).to_dict(orient="records")
+    records = [{k: _nan_to_none(v) for k, v in row.items()} for row in raw]
     for r in records:
         bm = r.get("benchmark", "")
         r["benchmarkLabel"] = BENCHMARK_LABELS.get(bm, bm)
@@ -71,7 +89,7 @@ def search_benchmarks(
     """Search SPEC benchmark results with filters.
 
     Args:
-        suite: Benchmark suite (cpu2017 or jbb2015)
+        suite: Benchmark suite (cpu2017, cpu2026, or jbb2015)
         benchmark: Filter by benchmark type (e.g. CINT2017, JBB2015MULTI)
         vendor: Filter by hardware vendor (exact match, case-insensitive)
         processor: Filter by processor name (substring match, case-insensitive)
@@ -80,7 +98,7 @@ def search_benchmarks(
         min_peak_result: Minimum peak/max-jOPS score
         min_base_result: Minimum base/critical-jOPS score
         os_filter: Filter by operating system (substring match)
-        sort_by: Sort column (peak_result, base_result, cores, processor_mhz)
+        sort_by: Sort column (peak_result, base_result, cores, processor_mhz, energy_peak, energy_base)
         sort_order: Sort direction (asc or desc)
         limit: Max results to return (1-100, default 20)
     """
@@ -105,6 +123,8 @@ def search_benchmarks(
         df = df[df["os"].str.lower().str.contains(os_filter.lower(), na=False)]
 
     sort_col = SORT_COLUMNS.get(sort_by, "peakResult")
+    if sort_col not in df.columns:
+        sort_col = "peakResult"
     ascending = sort_order.lower() == "asc"
     df = df.sort_values(sort_col, ascending=ascending, na_position="last")
 
@@ -122,7 +142,7 @@ def get_top_results(
 
     Args:
         benchmark: Benchmark type (e.g. CINT2017, JBB2015MULTI)
-        suite: Benchmark suite (cpu2017 or jbb2015)
+        suite: Benchmark suite (cpu2017, cpu2026, or jbb2015)
         metric: Score metric to rank by (peak or base)
         limit: Number of top results (1-50, default 10)
     """
@@ -148,7 +168,7 @@ def compare_processors(
     Args:
         processor1: First processor name (substring match)
         processor2: Second processor name (substring match)
-        suite: Benchmark suite (cpu2017 or jbb2015)
+        suite: Benchmark suite (cpu2017, cpu2026, or jbb2015)
         benchmark: Optional benchmark type filter
     """
     df = load_data(_validate_suite(suite))
@@ -183,7 +203,7 @@ def get_statistics(
     """Get summary statistics for benchmark results.
 
     Args:
-        suite: Benchmark suite (cpu2017 or jbb2015)
+        suite: Benchmark suite (cpu2017, cpu2026, or jbb2015)
         benchmark: Filter by benchmark type
         vendor: Filter by vendor
         group_by: Group results by (vendor, processor, or benchmark)
