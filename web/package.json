@@ -8,8 +8,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:run": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "typecheck": "echo 'no typescript in this project; skipping typecheck'",
     "lint": "biome check .",
     "lint:fix": "biome check --fix ."
   },

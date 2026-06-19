@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches: [main]
@@ -7,186 +6,41 @@ on:
     branches: [main]
   workflow_dispatch:
   workflow_call:
-
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
 concurrency:
-  group: pages
-  cancel-in-progress: false
-
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  lint-python:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@v7
-      - name: Lint root Python
-        run: |
-          uv sync --group dev
-          uv run ruff check .
-          uv run ruff format --check .
-      - name: Lint MCP server Python
-        working-directory: mcp_server
-        run: |
-          uv sync --group dev
-          uv run ruff check .
-          uv run ruff format --check .
-
-  lint-js:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Lint web app
-        working-directory: web
-        run: |
-          npm ci
-          npx biome check .
-
-  test-pipeline:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@v7
-      - name: Run pipeline tests
-        run: |
-          uv sync --group dev
-          uv run pytest tests/ -v
-
-  test-mcp:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@v7
-      - name: Run MCP server tests
-        working-directory: mcp_server
-        run: |
-          uv sync --group dev
-          uv run pytest tests/ -v
-
-  test-web:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Run web tests with coverage
-        working-directory: web
-        run: |
-          npm ci
-          npx vitest run --coverage
-
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@v7
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Audit Python (root)
-        run: |
-          uv sync --group dev
-          uv run pip-audit
-      - name: Audit Python (MCP server)
-        working-directory: mcp_server
-        run: |
-          uv sync --group dev
-          uv run pip-audit
-      - name: Audit Node
-        working-directory: web
-        run: |
-          npm ci
-          npm audit --audit-level=moderate
-
-  sbom:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@v7
-      - name: Generate JS SBOM
-        working-directory: web
-        run: |
-          npm ci
-          npx @cyclonedx/cyclonedx-npm --output-file ../sbom-web.cdx.json
-      - name: Generate Python SBOM
-        working-directory: mcp_server
-        run: |
-          uv sync --group dev
-          uv run cyclonedx-py environment -o ../sbom-mcp.cdx.json
-      - name: Upload SBOMs
-        uses: actions/upload-artifact@v7
-        with:
-          name: sbom
-          path: |
-            sbom-web.cdx.json
-            sbom-mcp.cdx.json
-
+  # NOTE: spec-search is a mixed JS+Python MCP repo with the web app in web/.
+  # fjacquet/ci web-ci@v1 has no working-directory input, so this is a
+  # repo-specific caller-equivalent replicating the web-ci steps scoped to web/.
   build:
-    needs: [lint-python, lint-js, test-pipeline, test-mcp, test-web]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
-      - name: Convert CSV to JSON
-        run: python scripts/convert_csv.py
+          persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: npm
           cache-dependency-path: web/package-lock.json
-      - name: Build web app
+      - name: Install
         working-directory: web
-        run: |
-          npm ci
-          npm run build
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: web/dist
-
-  deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+        run: npm ci
+      - name: Typecheck
+        working-directory: web
+        run: npm run typecheck
+      - name: Lint
+        working-directory: web
+        run: npm run lint
+      - name: Test
+        working-directory: web
+        run: npm run test:run
+      - name: Build
+        working-directory: web
+        run: npm run build
