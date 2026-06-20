@@ -1,5 +1,7 @@
 # spec-search
 
+[![Release](https://img.shields.io/github/v/release/fjacquet/spec-search?sort=semver)](https://github.com/fjacquet/spec-search/releases/latest)
+
 **SPEC CPU2017 Benchmark Explorer**
 
 [![CI](https://github.com/fjacquet/spec-search/actions/workflows/ci.yml/badge.svg)](https://github.com/fjacquet/spec-search/actions/workflows/ci.yml)
