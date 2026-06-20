@@ -8,59 +8,10 @@ on:
     - cron: "23 4 * * 1"
 permissions:
   contents: read
-concurrency:
-  group: security-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  security-events: write
+  actions: read
 jobs:
-  # NOTE: repo-specific equivalent of fjacquet/ci web-security@v1.
-  # web-security@v1 has no working-directory input and this repo has no root
-  # package.json (web app lives in web/), so jobs are scoped to web/ here.
-  codeql:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: github/codeql-action/init@v4
-        with:
-          languages: javascript-typescript
-          queries: security-extended
-      - uses: github/codeql-action/analyze@v4
-        with:
-          category: "/language:javascript-typescript"
-  osv-scan:
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.3.8
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-  sbom:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Install
-        working-directory: web
-        run: npm ci
-      - name: Generate SBOM
-        working-directory: web
-        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom-web.cdx.json
-      - name: Upload SBOM
-        uses: actions/upload-artifact@v7
-        with:
-          name: sbom-web
-          path: web/sbom-web.cdx.json
+  security:
+    uses: fjacquet/ci/.github/workflows/web-security.yml@v1
+    with:
+      working-directory: web
