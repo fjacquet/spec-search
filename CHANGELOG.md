@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.1] - 2026-06-23
+
+### Changed
+
+- CI/CD standardized on the shared `fjacquet/ci@v1` reusable workflows, scoped
+  to the web app via `working-directory: web` (#28).
+- README: added standard status badges; replaced the placeholder root
+  `CLAUDE.md` with a real project guide.
+- Bumped the web `all-npm` group (#32) and `actions/checkout` 6 → 7.
+
+### Fixed
+
+- Restored the GitHub Pages deploy. The CI standardization (#28) removed the
+  inline Pages deploy, and the shared `web-ci.yml@v1` only builds — so no
+  release published the site (Pages was frozen at v1.10.0). `release.yml` now
+  regenerates `web/public/data` and builds and deploys `web/dist` to GitHub
+  Pages on `v*` tags.
+
+### Security
+
+- Bumped transitive `@babel/core` to 7.29.7 to clear GHSA-4x5r-pxfx-6jf8.
+
 ## [1.10.0] - 2026-06-19
 
 ### Added
