@@ -12,6 +12,6 @@ permissions:
   actions: read
 jobs:
   security:
-    uses: fjacquet/ci/.github/workflows/web-security.yml@v1.2.0
+    uses: fjacquet/ci/.github/workflows/web-security.yml@v1.3.0
     with:
       working-directory: web
