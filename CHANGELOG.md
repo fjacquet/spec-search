@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.5] - 2026-08-24
+
+### Changed
+
+- Bumped the `all-actions` and `all-npm` dependency groups.
+- Resynced the Biome lint config schema with the installed CLI version.
+- Refreshed `uv.lock` (transitive Python dependency bumps).
+
 ## [1.10.1] - 2026-06-23
 
 ### Changed
