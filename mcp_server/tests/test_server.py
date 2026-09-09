@@ -192,13 +192,72 @@ JBB2015_DATA = pd.DataFrame(
 )
 
 
+CPU2006_DATA = pd.DataFrame(
+    [
+        {
+            "benchmark": "CINT2006rate",
+            "vendor": "IBM",
+            "system": "System x3650 M4",
+            "peakResult": 58.7,
+            "baseResult": 56.9,
+            "cores": 16,
+            "chips": 2,
+            "threadsPerCore": 2,
+            "processor": "Intel Xeon E5-2690",
+            "processorMhz": 2900,
+            "l1Cache": "32 KB",
+            "l2Cache": "256 KB",
+            "l3Cache": "20 MB",
+            "memory": "128 GB",
+            "os": "SUSE Linux Enterprise Server 11",
+            "fileSystem": "ext3",
+            "compiler": "Intel C++ Studio XE 12.1.0",
+            "hwAvail": "Mar-2012",
+            "swAvail": "Nov-2011",
+            "testDate": "Feb-2012",
+            "published": "Mar-2012",
+            "resultUrl": "/cpu2006/results/res2015q4/cpu2006-20151214-38331.html",
+        },
+        {
+            "benchmark": "CFP2006",
+            "vendor": "Hewlett-Packard",
+            "system": "ProLiant DL380p Gen8",
+            "peakResult": 92.4,
+            "baseResult": 88.1,
+            "cores": 8,
+            "chips": 1,
+            "threadsPerCore": 2,
+            "processor": "Intel Xeon E5-2667",
+            "processorMhz": 3300,
+            "l1Cache": "32 KB",
+            "l2Cache": "256 KB",
+            "l3Cache": "15 MB",
+            "memory": "64 GB",
+            "os": "Red Hat Enterprise Linux 6.2",
+            "fileSystem": "ext3",
+            "compiler": "Intel C++ Studio XE 12.1.0",
+            "hwAvail": "Mar-2012",
+            "swAvail": "Nov-2011",
+            "testDate": "Mar-2012",
+            "published": "Apr-2012",
+            "resultUrl": "/cpu2006/results/res2012q2/cpu2006-20120320-20001.html",
+        },
+    ]
+)
+
+
 @pytest.fixture(autouse=True)
 def mock_data(monkeypatch):
     """Replace load_data cache with mock DataFrames for all suites."""
     monkeypatch.setattr(
         data_loader,
         "_dfs",
-        {"cpu2017": CPU2017_DATA, "jbb2015": JBB2015_DATA, "cpu2026": CPU2026_DATA},
+        {
+            "cpu2017": CPU2017_DATA,
+            "jbb2015": JBB2015_DATA,
+            "cpu2026": CPU2026_DATA,
+            "cpu2006": CPU2006_DATA,
+        },
     )
 
 
@@ -427,3 +486,37 @@ class TestSearchBenchmarksCpu2026:
         # cpu2017 has no energy columns; sort must not raise and falls back to peak
         results = search_benchmarks(suite="cpu2017", sort_by="energy_peak")
         assert len(results) == 4
+
+
+class TestSearchBenchmarksCpu2006:
+    def test_no_filters(self):
+        results = search_benchmarks(suite="cpu2006")
+        assert len(results) == 2
+
+    def test_benchmark_label(self):
+        results = search_benchmarks(suite="cpu2006", benchmark="CINT2006rate")
+        assert all(r["benchmarkLabel"] == "Integer Multi-Core" for r in results)
+
+    def test_filter_processor(self):
+        results = search_benchmarks(suite="cpu2006", processor="E5-2667")
+        assert len(results) == 1
+        assert results[0]["vendor"] == "Hewlett-Packard"
+
+    def test_enrichment_fields_present(self):
+        results = search_benchmarks(suite="cpu2006", processor="E5-2690")
+        assert results[0]["l3Cache"] == "20 MB"
+        assert results[0]["fileSystem"] == "ext3"
+        assert results[0]["swAvail"] == "Nov-2011"
+
+    def test_top_results(self):
+        results = get_top_results(benchmark="CFP2006", suite="cpu2006", limit=1)
+        assert results[0]["processor"] == "Intel Xeon E5-2667"
+
+    def test_energy_sort_falls_back(self):
+        """CPU2006 has no energy columns; sorting by energy must not raise."""
+        results = search_benchmarks(suite="cpu2006", sort_by="energy_peak")
+        assert len(results) == 2
+
+    def test_statistics(self):
+        stats = get_statistics(suite="cpu2006", group_by="vendor")
+        assert len(stats) == 2

@@ -11,9 +11,14 @@ SPEC publishes each suite's results as a downloadable CSV dump. Replace the
 |-------|----------|----------|
 | CPU2017 | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2017` | `datas/cpu2017-results.csv` |
 | CPU2026 | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2026;op=dump;format=csvdump` | `datas/cpu2026-results.csv` |
+| CPU2006 *(retired)* | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2006;op=dump;format=csvdump` | `datas/cpu2006-results.csv` |
 | JBB2015 | `https://www.spec.org/cgi-bin/osgresults?conf=jbb2015` | `datas/jbb2015-results.csv` |
 
 Click **"Dump All Records As CSV"** at the top of the page to download the full dataset.
+
+> **CPU2006 is retired and needs no refresh.** Its results are final — 48,381 rows
+> published between Aug-2006 and Jun-2018. The CSV was imported once; skip it when
+> refreshing the active suites.
 
 ## Refresh Steps
 
@@ -26,6 +31,11 @@ datas/<suite>-results.csv
 ```
 
 For example: `datas/cpu2017-results.csv`, `datas/cpu2026-results.csv`, or `datas/jbb2015-results.csv`.
+
+Note the column names differ per suite; `scripts/convert_csv.py` holds a `SUITES`
+entry mapping each dump's headers to the shared JSON schema. CPU2006 is the odd
+one out: its score columns are `Result`/`Baseline` (not `Peak Result`/`Base
+Result`) and its result links live in `Disclosure`, not `Disclosures`.
 
 ### 2. Regenerate web app data and rebuild
 

@@ -10,16 +10,22 @@ from spec_search_mcp.data_loader import VALID_SUITES, load_data
 mcp = FastMCP(
     name="spec-search",
     instructions=(
-        "Search SPEC benchmark results (CPU2017, CPU2026, and JBB2015). "
-        "All tools accept a 'suite' parameter: 'cpu2017' (default), 'cpu2026', or 'jbb2015'. "
+        "Search SPEC benchmark results (CPU2006, CPU2017, CPU2026, and JBB2015). "
+        "All tools accept a 'suite' parameter: 'cpu2017' (default), 'cpu2026', 'cpu2006', or 'jbb2015'. "
         "Use search_benchmarks for filtered queries, "
         "get_top_results for rankings, compare_processors for side-by-side comparison, "
         "and get_statistics for aggregated data. CPU2026 adds energy metrics "
-        "(sort_by 'energy_peak' or 'energy_base')."
+        "(sort_by 'energy_peak' or 'energy_base'). CPU2006 is retired: its results "
+        "are final and span Aug-2006 to Jun-2018."
     ),
 )
 
 BENCHMARK_LABELS = {
+    # CPU2006
+    "CINT2006": "Integer Per-Core",
+    "CFP2006": "FP Per-Core",
+    "CINT2006rate": "Integer Multi-Core",
+    "CFP2006rate": "FP Multi-Core",
     # CPU2017
     "CINT2017": "Integer Per-Core",
     "CFP2017": "FP Per-Core",
@@ -89,7 +95,7 @@ def search_benchmarks(
     """Search SPEC benchmark results with filters.
 
     Args:
-        suite: Benchmark suite (cpu2017, cpu2026, or jbb2015)
+        suite: Benchmark suite (cpu2017, cpu2026, cpu2006, or jbb2015)
         benchmark: Filter by benchmark type (e.g. CINT2017, JBB2015MULTI)
         vendor: Filter by hardware vendor (exact match, case-insensitive)
         processor: Filter by processor name (substring match, case-insensitive)
@@ -142,7 +148,7 @@ def get_top_results(
 
     Args:
         benchmark: Benchmark type (e.g. CINT2017, JBB2015MULTI)
-        suite: Benchmark suite (cpu2017, cpu2026, or jbb2015)
+        suite: Benchmark suite (cpu2017, cpu2026, cpu2006, or jbb2015)
         metric: Score metric to rank by (peak or base)
         limit: Number of top results (1-50, default 10)
     """
@@ -168,7 +174,7 @@ def compare_processors(
     Args:
         processor1: First processor name (substring match)
         processor2: Second processor name (substring match)
-        suite: Benchmark suite (cpu2017, cpu2026, or jbb2015)
+        suite: Benchmark suite (cpu2017, cpu2026, cpu2006, or jbb2015)
         benchmark: Optional benchmark type filter
     """
     df = load_data(_validate_suite(suite))
@@ -203,7 +209,7 @@ def get_statistics(
     """Get summary statistics for benchmark results.
 
     Args:
-        suite: Benchmark suite (cpu2017, cpu2026, or jbb2015)
+        suite: Benchmark suite (cpu2017, cpu2026, cpu2006, or jbb2015)
         benchmark: Filter by benchmark type
         vendor: Filter by vendor
         group_by: Group results by (vendor, processor, or benchmark)

@@ -1,4 +1,4 @@
-"""Load and cache SPEC benchmark data from CSV (CPU2017, CPU2026, and JBB2015)."""
+"""Load and cache SPEC benchmark data from CSV (CPU2006, CPU2017, CPU2026, and JBB2015)."""
 
 import gzip
 import importlib.resources
@@ -12,11 +12,12 @@ _CSV_OVERRIDE = os.environ.get("SPEC_SEARCH_CSV_PATH")
 
 _dfs: dict[str, pd.DataFrame] = {}
 
-VALID_SUITES = ["cpu2017", "jbb2015", "cpu2026"]
+VALID_SUITES = ["cpu2017", "jbb2015", "cpu2026", "cpu2006"]
 
 CPU2017_URL_PATTERN = re.compile(r'HREF="(/cpu2017/results/[^"]+\.html)"')
 JBB2015_URL_PATTERN = re.compile(r'(/jbb2015/results/[^"]+\.html)')
 CPU2026_URL_PATTERN = re.compile(r'HREF="(/cpu2026/results/[^"]+\.html)"')
+CPU2006_URL_PATTERN = re.compile(r'HREF="(/cpu2006/results/[^"]+\.html)"')
 
 SUITE_CONFIGS = {
     "cpu2017": {
@@ -69,6 +70,38 @@ SUITE_CONFIGS = {
         "url_pattern": JBB2015_URL_PATTERN,
         "numeric_cols": ["peakResult", "baseResult", "cores", "chips", "threadsPerCore", "processorMhz", "nodes"],
         "extra_cols": ["jvm", "jvmVendor", "nodes"],
+    },
+    "cpu2006": {
+        "csv_filename": "cpu2006-results.csv",
+        "rename_map": {
+            "Benchmark": "benchmark",
+            "Hardware Vendor": "vendor",
+            "System": "system",
+            "Result": "peakResult",
+            "Baseline": "baseResult",
+            "# Cores": "cores",
+            "# Chips": "chips",
+            "# Threads Per Core": "threadsPerCore",
+            "Processor": "processor",
+            "Processor MHz": "processorMhz",
+            "1st Level Cache": "l1Cache",
+            "2nd Level Cache": "l2Cache",
+            "3rd Level Cache": "l3Cache",
+            "Memory": "memory",
+            "Operating System": "os",
+            "File System": "fileSystem",
+            "Compiler": "compiler",
+            "HW Avail": "hwAvail",
+            "SW Avail": "swAvail",
+            "Test Date": "testDate",
+            "Published": "published",
+        },
+        # Links live in the singular "Disclosure" column; the trailing
+        # "Disclosures" header is present but empty on every row.
+        "url_column": "Disclosure",
+        "url_pattern": CPU2006_URL_PATTERN,
+        "numeric_cols": ["peakResult", "baseResult", "cores", "chips", "threadsPerCore", "processorMhz"],
+        "extra_cols": ["l1Cache", "l2Cache", "l3Cache", "fileSystem", "compiler", "swAvail"],
     },
     "cpu2026": {
         "csv_filename": "cpu2026-results.csv",

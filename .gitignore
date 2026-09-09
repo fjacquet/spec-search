@@ -14,6 +14,7 @@ web/dist/
 web/public/data/cpu2017/
 web/public/data/jbb2015/
 web/public/data/cpu2026/
+web/public/data/cpu2006/
 
 # MCP server venv and build artifacts
 mcp_server/.venv/

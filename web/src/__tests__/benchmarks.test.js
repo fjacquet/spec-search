@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { BENCHMARK_LABELS, benchmarkLabel } from "../constants/benchmarks.js";
 import {
+  DEFAULT_SUITE,
   getSuite,
+  SUITE_IDS,
   SUITES,
   benchmarkLabel as suiteBenchmarkLabel,
 } from "../constants/suites.js";
@@ -75,6 +77,33 @@ describe("suites config", () => {
     expect(keys).toContain("energyPeakResult");
     expect(keys).toContain("energyBaseResult");
   });
+
+  it("has a cpu2006 suite", () => {
+    expect(SUITES.cpu2006).toBeDefined();
+    expect(getSuite("cpu2006").name).toBe("SPEC CPU2006");
+  });
+
+  it("cpu2006 has correct benchmark labels", () => {
+    const c = getSuite("cpu2006");
+    expect(c.benchmarkLabels.CINT2006).toBe("Integer Per-Core");
+    expect(c.benchmarkLabels.CFP2006rate).toBe("FP Multi-Core");
+  });
+
+  it("cpu2006 exposes cache and compiler extra columns", () => {
+    const keys = getSuite("cpu2006").extraColumns.map((col) => col.key);
+    expect(keys).toContain("l3Cache");
+    expect(keys).toContain("compiler");
+  });
+
+  it("cpu2006 has no energy columns", () => {
+    const keys = getSuite("cpu2006").extraColumns.map((col) => col.key);
+    expect(keys).not.toContain("energyPeakResult");
+  });
+
+  it("lists cpu2006 first and keeps cpu2017 as the default suite", () => {
+    expect(SUITE_IDS[0]).toBe("cpu2006");
+    expect(DEFAULT_SUITE).toBe("cpu2017");
+  });
 });
 
 describe("suiteBenchmarkLabel", () => {
@@ -90,5 +119,9 @@ describe("suiteBenchmarkLabel", () => {
     expect(suiteBenchmarkLabel("CINT2026rate", "cpu2026")).toBe(
       "Integer Multi-Core",
     );
+  });
+
+  it("resolves CPU2006 labels with suite param", () => {
+    expect(suiteBenchmarkLabel("CFP2006rate", "cpu2006")).toBe("FP Multi-Core");
   });
 });

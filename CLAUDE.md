@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`spec-search` is a **SPEC CPU benchmark explorer** (CPU2017, CPU2026, JBB2015). It has three
+`spec-search` is a **SPEC CPU benchmark explorer** (CPU2006, CPU2017, CPU2026, JBB2015). It has three
 components in one repo:
 
 - **Data pipeline** (root, Python/uv) — ingests and normalizes SPEC result data into `datas/`.

@@ -268,6 +268,79 @@ class TestProcessRowCpu2026:
         assert result is None
 
 
+# --- process_row (CPU2006) ---
+
+
+class TestProcessRowCpu2006:
+    def _make_row(self, **overrides):
+        """Create a minimal valid CPU2006 CSV row dict."""
+        base = {
+            "Benchmark": "CINT2006rate",
+            "Hardware Vendor\t": "IBM",
+            "System": "System x3650 M4",
+            "Result": "58.7",
+            "Baseline": "56.9",
+            "# Cores": "16",
+            "# Chips ": "2",
+            "# Threads Per Core": "2",
+            "Processor ": "Intel Xeon E5-2690",
+            "Processor MHz": "2900",
+            "1st Level Cache": "32 KB I + 32 KB D on chip per core",
+            "2nd Level Cache": "256 KB I+D on chip per core",
+            "3rd Level Cache": "20 MB I+D on chip per chip",
+            "Memory": "128 GB",
+            "Operating System": "SUSE Linux Enterprise Server 11",
+            "File System": "ext3",
+            "Compiler": "C/C++: Version 12.1.0 of Intel C++ Studio XE",
+            "HW Avail": "Mar-2012",
+            "SW Avail": "Nov-2011",
+            "Test Date": "Feb-2012",
+            "Published": "Mar-2012",
+            "Disclosure": (
+                '<A HREF="/cpu2006/results/res2015q4/cpu2006-20151214-38331.html">HTML</A> '
+                '<A HREF="/cpu2006/results/res2015q4/cpu2006-20151214-38331.pdf">PDF</A>'
+            ),
+        }
+        base.update(overrides)
+        return base
+
+    def test_basic_row(self):
+        result = process_row(self._make_row(), SUITES["cpu2006"])
+        assert result["benchmark"] == "CINT2006rate"
+        assert result["vendor"] == "IBM"
+        assert result["processor"] == "Intel Xeon E5-2690"
+        assert result["cores"] == 16
+
+    def test_result_maps_to_peak_and_baseline_to_base(self):
+        """CPU2006 names its columns Result/Baseline, not Peak/Base Result."""
+        result = process_row(self._make_row(), SUITES["cpu2006"])
+        assert result["peakResult"] == 58.7
+        assert result["baseResult"] == 56.9
+
+    def test_extracts_url_from_disclosure_column(self):
+        """CPU2006 puts links in `Disclosure` (singular); `Disclosures` is always empty."""
+        result = process_row(self._make_row(), SUITES["cpu2006"])
+        assert result["resultUrl"] == "/cpu2006/results/res2015q4/cpu2006-20151214-38331.html"
+
+    def test_enrichment_fields(self):
+        result = process_row(self._make_row(), SUITES["cpu2006"])
+        assert result["l3Cache"] == "20 MB I+D on chip per chip"
+        assert result["fileSystem"] == "ext3"
+        assert result["swAvail"] == "Nov-2011"
+        assert result["compiler"].startswith("C/C++: Version 12.1.0")
+
+    def test_no_energy_fields(self):
+        """CPU2006 predates energy metrics; those keys must not appear."""
+        result = process_row(self._make_row(), SUITES["cpu2006"])
+        assert "energyPeakResult" not in result
+        assert "energyBaseResult" not in result
+
+    def test_skips_row_without_processor(self):
+        row = self._make_row()
+        row["Processor "] = ""
+        assert process_row(row, SUITES["cpu2006"]) is None
+
+
 # --- Integration: full pipeline on sample CSV ---
 
 
@@ -329,6 +402,26 @@ class TestPipelineIntegration:
         )
         (datas_dir / "cpu2026-results.csv").write_text(cpu2026_content, encoding="utf-8-sig")
 
+        cpu2006_content = (
+            'Benchmark,"Hardware Vendor\t",System,Result,Baseline,'
+            '"# Cores","# Chips ","# Cores Per Chip ","# Threads Per Core",'
+            '"Processor ","Processor MHz","Processor Characteristics",'
+            '"CPU(s) Orderable","Auto Parallelization","Base Pointer Size",'
+            '"Peak Pointer Size","1st Level Cache","2nd Level Cache",'
+            '"3rd Level Cache","Other Cache",Memory,"Operating System",'
+            '"File System",Compiler,"HW Avail","SW Avail",License,'
+            '"Tested By","Test Sponsor","Test Date",Published,"Updated ",'
+            "Disclosure,Disclosures\r\n"
+            'CINT2006rate,IBM,"System x3650 M4",58.7,56.9,16,2,8,2,'
+            '"Intel Xeon E5-2690",2900,"Turbo Boost","1-2 chips",No,64,64,'
+            '"32 KB","256 KB","20 MB",None,"128 GB","SUSE Linux",ext3,'
+            '"Intel C++ 12.1.0","Mar-2012","Nov-2011",9017,IBM,IBM,'
+            '"Feb-2012","Mar-2012",,'
+            '"<A HREF=""/cpu2006/results/res2015q4/cpu2006-20151214-38331.html"">HTML</A>"'
+            "\r\n"
+        )
+        (datas_dir / "cpu2006-results.csv").write_text(cpu2006_content, encoding="utf-8-sig")
+
         return datas_dir
 
     def test_full_pipeline(self, sample_csvs, tmp_path, monkeypatch):
@@ -377,3 +470,16 @@ class TestPipelineIntegration:
         assert "CINT2026rate" in cpu2026_facets["benchmarks"]
         assert "compilerCategories" in cpu2026_facets
         assert "Vendor" in cpu2026_facets["compilerCategories"]
+
+        # Check CPU2006 results
+        cpu2006_results = json.loads((output_dir / "cpu2006" / "results.json").read_text())
+        assert len(cpu2006_results) == 1
+        assert cpu2006_results[0]["benchmark"] == "CINT2006rate"
+        assert cpu2006_results[0]["peakResult"] == 58.7
+        assert cpu2006_results[0]["baseResult"] == 56.9
+        assert cpu2006_results[0]["l3Cache"] == "20 MB"
+        assert cpu2006_results[0]["resultUrl"] == "/cpu2006/results/res2015q4/cpu2006-20151214-38331.html"
+
+        cpu2006_facets = json.loads((output_dir / "cpu2006" / "facets.json").read_text())
+        assert "CINT2006rate" in cpu2006_facets["benchmarks"]
+        assert "IBM" in cpu2006_facets["vendors"]

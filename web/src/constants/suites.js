@@ -1,5 +1,32 @@
 /** Suite configurations for multi-benchmark support. */
 export const SUITES = {
+  cpu2006: {
+    id: "cpu2006",
+    name: "SPEC CPU2006",
+    peakLabel: "Peak",
+    baseLabel: "Base",
+    peakScoreLabel: "Peak Score",
+    baseScoreLabel: "Base Score",
+    benchmarkLabels: {
+      CINT2006: "Integer Per-Core",
+      CFP2006: "FP Per-Core",
+      CINT2006rate: "Integer Multi-Core",
+      CFP2006rate: "FP Multi-Core",
+    },
+    extraColumns: [
+      { key: "l3Cache", label: "L3 Cache" },
+      { key: "compiler", label: "Compiler" },
+    ],
+    extraComparisonFields: [
+      { key: "l1Cache", label: "L1 Cache" },
+      { key: "l2Cache", label: "L2 Cache" },
+      { key: "l3Cache", label: "L3 Cache" },
+      { key: "compiler", label: "Compiler" },
+      { key: "fileSystem", label: "File System" },
+      { key: "swAvail", label: "SW Avail" },
+    ],
+    specBaseUrl: "https://www.spec.org",
+  },
   cpu2017: {
     id: "cpu2017",
     name: "SPEC CPU2017",

@@ -1,6 +1,8 @@
 # spec-search-mcp
 
-MCP server for searching SPEC CPU2017 benchmark results. Provides 4 tools for AI assistants to query 46,000+ benchmark entries across 623 processors and 52 vendors.
+MCP server for searching SPEC benchmark results across four suites — CPU2017, CPU2026, CPU2006 (retired), and JBB2015. Provides 4 tools for AI assistants to query 97,000+ benchmark entries.
+
+Every tool takes a `suite` parameter: `cpu2017` (default), `cpu2026`, `cpu2006`, or `jbb2015`.
 
 ## Installation
 
@@ -53,10 +55,11 @@ spec-search-mcp
 
 ### `search_benchmarks`
 
-Filter and sort SPEC CPU2017 benchmark results.
+Filter and sort SPEC benchmark results.
 
 Parameters:
-- `benchmark` — CINT2017, CFP2017, CINT2017rate, or CFP2017rate
+- `suite` — cpu2017 (default), cpu2026, cpu2006, or jbb2015
+- `benchmark` — suite-specific code, e.g. CINT2017, CFP2017rate, CINT2006rate, or JBB2015MULTI
 - `vendor` — Hardware vendor (exact match, case-insensitive)
 - `processor` — Processor name (substring match, case-insensitive)
 - `min_cores` / `max_cores` — Core count range
@@ -103,8 +106,8 @@ Returns count, mean, median, and max for both peak and base scores.
 
 ## Data Source
 
-Benchmark data sourced from [SPEC CPU2017 Published Results](https://www.spec.org/cpu2017/results/).
-SPEC and CPU2017 are trademarks of the Standard Performance Evaluation Corporation.
+Benchmark data sourced from SPEC's published results for CPU2017, CPU2026, CPU2006, and JBB2015.
+SPEC, CPU2006, CPU2017, and CPU2026 are trademarks of the Standard Performance Evaluation Corporation.
 
 ## License
 

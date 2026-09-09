@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Convert SPEC benchmark CSVs to optimized JSON for web app and per-processor index.
 
-Supports multiple benchmark suites (CPU2017, JBB2015). Each suite produces its own
+Supports multiple benchmark suites (CPU2006, CPU2017, CPU2026, JBB2015). Each suite produces its own
 output directory under web/public/data/{suite_id}/.
 """
 
@@ -71,6 +71,40 @@ SUITES = {
         "url_source_column": "Disclosure",
         "numeric_fields": {"peakResult", "baseResult", "cores", "chips", "threadsPerCore", "processorMhz", "nodes"},
         "extra_facet_fields": {"jvmVendors": "jvmVendor"},
+    },
+    "cpu2006": {
+        "csv_filename": "cpu2006-results.csv",
+        "column_map": {
+            "Benchmark": "benchmark",
+            "Hardware Vendor": "vendor",
+            "System": "system",
+            "Result": "peakResult",
+            "Baseline": "baseResult",
+            "# Cores": "cores",
+            "# Chips": "chips",
+            "# Threads Per Core": "threadsPerCore",
+            "Processor": "processor",
+            "Processor MHz": "processorMhz",
+            "1st Level Cache": "l1Cache",
+            "2nd Level Cache": "l2Cache",
+            "3rd Level Cache": "l3Cache",
+            "Memory": "memory",
+            "Operating System": "os",
+            "File System": "fileSystem",
+            "Compiler": "compiler",
+            "HW Avail": "hwAvail",
+            "SW Avail": "swAvail",
+            "Test Date": "testDate",
+            "Published": "published",
+            # CPU2006 dumps links in the singular "Disclosure" column; the
+            # trailing "Disclosures" header exists but every row is short by
+            # one field, so it is always empty.
+            "Disclosure": "_disclosures",
+        },
+        "url_pattern": re.compile(r'HREF="(/cpu2006/results/[^"]+\.html)"'),
+        "url_source_column": "Disclosure",
+        "numeric_fields": {"peakResult", "baseResult", "cores", "chips", "threadsPerCore", "processorMhz"},
+        "extra_facet_fields": {},
     },
     "cpu2026": {
         "csv_filename": "cpu2026-results.csv",

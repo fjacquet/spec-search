@@ -2,13 +2,13 @@
 
 [![Release](https://img.shields.io/github/v/release/fjacquet/spec-search?sort=semver)](https://github.com/fjacquet/spec-search/releases/latest)
 
-**SPEC CPU2017 Benchmark Explorer**
+**SPEC CPU Benchmark Explorer**
 
 [![CI](https://github.com/fjacquet/spec-search/actions/workflows/ci.yml/badge.svg)](https://github.com/fjacquet/spec-search/actions/workflows/ci.yml)
 [![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue)](https://fjacquet.github.io/spec-search/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Search, filter, and compare 46,000+ SPEC CPU2017 benchmark results through a web UI, an MCP server for AI assistants, or a static JSON API.
+Search, filter, and compare 97,000+ SPEC benchmark results — CPU2006, CPU2017, CPU2026, and JBB2015 — through a web UI, an MCP server for AI assistants, or a static JSON API.
 
 ## Features
 
@@ -67,7 +67,7 @@ Add to your Claude config (`~/.claude.json` or Claude Desktop):
 
 ```mermaid
 flowchart TD
-    CSV["cpu2017-results.csv\n(47MB, 46K rows)"]
+    CSV["datas/*-results.csv\n(4 suites, 97K rows)"]
     CSV --> Pipeline["convert_csv.py"]
     CSV --> MCP["MCP Server\nFastMCP + Pandas"]
     Pipeline --> JSON["results.json + facets.json\n+ processors/*.json"]
@@ -89,9 +89,13 @@ flowchart TD
 
 ## Data Source
 
-Benchmark data sourced from [SPEC CPU2017 Published Results](https://www.spec.org/cpu2017/results/).
+Benchmark data sourced from SPEC's published results for
+[CPU2017](https://www.spec.org/cpu2017/results/),
+[CPU2026](https://www.spec.org/cpu2026/results/),
+[CPU2006](https://www.spec.org/cpu2006/results/) (retired), and
+[JBB2015](https://www.spec.org/jbb2015/results/).
 
-SPEC, SPECrate, and CPU2017 are trademarks of the [Standard Performance Evaluation Corporation (SPEC)](https://www.spec.org/). This project is not affiliated with or endorsed by SPEC. The data is used for informational and research purposes.
+SPEC, SPECrate, CPU2006, CPU2017, and CPU2026 are trademarks of the [Standard Performance Evaluation Corporation (SPEC)](https://www.spec.org/). This project is not affiliated with or endorsed by SPEC. The data is used for informational and research purposes.
 
 ## License
 

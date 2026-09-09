@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-09-09
+
+### Added
+
+- SPEC CPU2006 as a fourth benchmark suite (48,381 results, published Aug-2006
+  to Jun-2018). The suite is retired, so the dataset is final and is imported
+  once rather than refreshed — `docs/data-refresh.md` marks it accordingly.
+  Available in the web app, the MCP server (`suite="cpu2006"`), and the static
+  JSON API. Its CSV differs from the other CPU suites: scores come from
+  `Result`/`Baseline` rather than `Peak Result`/`Base Result`, and result links
+  from the singular `Disclosure` column. Alongside the standard fields it
+  exposes L1/L2/L3 cache, compiler, file system, and SW availability.
+
 ## [1.10.6] - 2026-09-09
 
 ### Changed
