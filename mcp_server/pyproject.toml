@@ -1,6 +1,6 @@
 [project]
 name = "spec-search-mcp"
-version = "1.0.0"
+version = "1.11.1"
 description = "MCP server for SPEC benchmark search (CPU2017, CPU2026, and JBB2015)"
 readme = "README.md"
 license = "MIT"
