@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.11.3] - 2026-10-02
+
+### Security
+
+- Full lockfile refresh (`uv.lock`, `mcp_server/uv.lock`, `web/package-lock.json`);
+  the recursive `osv-scanner` scan is clean afterwards.
+- Dropped the expired OSV waivers (`GHSA-5p2g-fcmc-qvqq`, `GHSA-w3rx-r6r6-pgpr`) and
+  removed `web/osv-scanner.toml`, which no longer holds any entry.
+
+### Changed
+
+- Resynced the Biome lint config schema with the installed CLI (`2.5.8` → `2.5.15`).
+- Bumped the `astral-sh/setup-uv` action (`all-actions` group).
+
+## [1.11.2] - 2026-09-20
+
+### Security
+
+- Overrode the `image-size` transitive dependency (unused `pptxgenjs` path) to 2.0.4 to
+  patch its advisory.
+
+### Added
+
+- MIT `LICENSE` file, referenced by the README badge but missing from the repository.
+
+### Changed
+
+- Bumped the `all-npm` group in `web/` (9 updates, including React 19.3.0, Vite 8.3.0 and
+  Vitest 5.0.1) and the `astral-sh/setup-uv` action.
+
+## [1.11.1] - 2026-09-13
+
+### Security
+
+- Patched the `fast-uri` npm advisory in `web/`.
+
+### Fixed
+
+- Aligned the declared package versions (`pyproject.toml`, `mcp_server/pyproject.toml`,
+  `spec_search_mcp.__version__`, lockfiles), still `1.0.0`, with the published release line.
+
 ## [1.11.0] - 2026-09-09
 
 ### Added

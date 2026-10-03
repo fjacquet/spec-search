@@ -81,7 +81,7 @@ flowchart TD
 |-----------|-----------|
 | Data pipeline | Python 3.12, csv stdlib |
 | MCP server | FastMCP 3.x, Pandas |
-| Web app | React 19, Vite 6 |
+| Web app | React 19, Vite 8 |
 | Testing | Pytest, Vitest |
 | Linting | Ruff (Python), Biome (JS) |
 | CI/CD | GitHub Actions |
