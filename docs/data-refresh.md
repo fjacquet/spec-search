@@ -9,12 +9,12 @@ SPEC publishes each suite's results as a downloadable CSV dump. Replace the
 
 | Suite | Dump URL | Saved to |
 |-------|----------|----------|
-| CPU2017 | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2017` | `datas/cpu2017-results.csv` |
+| CPU2017 | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2017;op=dump;format=csvdump` | `datas/cpu2017-results.csv` |
 | CPU2026 | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2026;op=dump;format=csvdump` | `datas/cpu2026-results.csv` |
 | CPU2006 *(retired)* | `https://www.spec.org/cgi-bin/osgresults?conf=cpu2006;op=dump;format=csvdump` | `datas/cpu2006-results.csv` |
-| JBB2015 | `https://www.spec.org/cgi-bin/osgresults?conf=jbb2015` | `datas/jbb2015-results.csv` |
+| JBB2015 | `https://www.spec.org/cgi-bin/osgresults?conf=jbb2015;op=dump;format=csvdump` | `datas/jbb2015-results.csv` |
 
-Click **"Dump All Records As CSV"** at the top of the page to download the full dataset.
+Each URL downloads the full dataset as CSV directly (equivalent to the **"Dump All Records As CSV"** button on the results page).
 
 > **CPU2006 is retired and needs no refresh.** Its results are final — 48,381 rows
 > published between Aug-2006 and Jun-2018. The CSV was imported once; skip it when
