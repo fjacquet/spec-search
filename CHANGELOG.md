@@ -7,12 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.4] - 2026-10-09
+
 ### Changed
 
 - Refreshed CPU2017 and CPU2026 datasets from spec.org (results through
   Oct-2026): CPU2017 46,852 → 46,899 rows, CPU2026 469 → 574 rows. JBB2015
   and CPU2006 unchanged. CSV schemas unchanged; MCP server's bundled gzipped
   copies regenerated.
+
+### Fixed
+
+- `docs/data-refresh.md`: CPU2017 and JBB2015 dump URLs now include
+  `;op=dump;format=csvdump`, so they download the CSV instead of opening the
+  results search page.
 
 ## [1.11.3] - 2026-10-02
 
