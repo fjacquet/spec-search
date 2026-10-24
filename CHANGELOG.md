@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.5] - 2026-10-24
+
+### Changed
+
+- Refreshed CPU2017, CPU2026 and JBB2015 datasets from spec.org: CPU2017
+  46,899 → 46,923 rows, CPU2026 574 → 593 rows, JBB2015 1,457 → 1,458 rows.
+  CPU2006 unchanged (retired). CSV schemas unchanged; MCP server's bundled
+  gzipped copies regenerated.
+
+### Security
+
+- Full lockfile refresh (`uv.lock`, `mcp_server/uv.lock`, `web/package-lock.json`)
+  clearing new advisories in `fastmcp`, `filelock`, `opentelemetry-api`; dev
+  dependency `happy-dom` bumped to 21.x (GHSA-834v-8h66-3h79). The recursive
+  `osv-scanner` scan is clean afterwards.
+
 ## [1.11.4] - 2026-10-09
 
 ### Changed
