@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.6] - 2026-11-05
+
+### Changed
+
+- Refreshed CPU2017 and CPU2026 datasets from spec.org: CPU2017
+  46,923 → 46,937 rows, CPU2026 593 → 655 rows. CSV schemas unchanged; MCP
+  server's bundled gzipped copies regenerated.
+
 ## [1.11.5] - 2026-10-24
 
 ### Changed
